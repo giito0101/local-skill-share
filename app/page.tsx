@@ -1,6 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { CreateSkillForm } from "./create-skill-form";
 import { deleteSkillAction } from "./actions";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]/route";
+import { SignInButton, SignOutButton } from "./components/AuthButtons";
 
 export default async function Home() {
   // 直にDB検索（RSCなので可能）
@@ -8,6 +11,8 @@ export default async function Home() {
     orderBy: { createdAt: "desc" },
     take: 20,
   });
+    
+  const session = await getServerSession(authOptions); // 未ログインなら null
 
   return (
     <main className="p-6 space-y-4">
@@ -30,6 +35,14 @@ export default async function Home() {
           </li>
         ))}
       </ul>
+      
+      <h1>Auth.js (v4) minimal</h1>
+      {session ? <SignOutButton /> : <SignInButton />}
+      {session ? (
+        <p>Signed in as {session.user?.name ?? session.user?.email}</p>
+      ) : (
+        <p>Not signed in</p>
+      )}
     </main>
   );
 }
