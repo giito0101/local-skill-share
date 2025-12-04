@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import { SignInButton, SignOutButton } from "./components/AuthButtons";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default async function Home() {
   // 直にDB検索（RSCなので可能）
@@ -49,6 +50,10 @@ export default async function Home() {
       <p>
         <Link href="/users">/users へ</Link>
       </p>
+
+      <h1 className="text-2xl font-bold">shadcn/ui + Tailwind v4</h1>
+      <Button>Click me</Button>
+      <h1 className="text-3xl font-bold text-blue-500">Hello Tailwind v4</h1>
     </main>
   );
 }
