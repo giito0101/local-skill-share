@@ -4,6 +4,7 @@ import { deleteSkillAction } from "./actions";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import { SignInButton, SignOutButton } from "./components/AuthButtons";
+import Link from "next/link";
 
 export default async function Home() {
   // 直にDB検索（RSCなので可能）
@@ -11,7 +12,7 @@ export default async function Home() {
     orderBy: { createdAt: "desc" },
     take: 20,
   });
-    
+
   const session = await getServerSession(authOptions); // 未ログインなら null
 
   return (
@@ -35,7 +36,7 @@ export default async function Home() {
           </li>
         ))}
       </ul>
-      
+
       <h1>Auth.js (v4) minimal</h1>
       {session ? <SignOutButton /> : <SignInButton />}
       {session ? (
@@ -43,6 +44,11 @@ export default async function Home() {
       ) : (
         <p>Not signed in</p>
       )}
+
+      <h1 style={{ fontSize: 20, fontWeight: 600 }}>Home</h1>
+      <p>
+        <Link href="/users">/users へ</Link>
+      </p>
     </main>
   );
 }
