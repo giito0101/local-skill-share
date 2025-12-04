@@ -1,59 +1,91 @@
 import { prisma } from "@/lib/prisma";
-import { CreateSkillForm } from "./create-skill-form";
-import { deleteSkillAction } from "./actions";
-import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]/route";
-import { SignInButton, SignOutButton } from "./components/AuthButtons";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { SkillSearchSchema } from "@/lib/validations";
+import { SkillSearchForm } from "@/app/components/skills/skill-search-form";
+import { SkillList } from "@/app/components/skills/skill-list";
 
-export default async function Home() {
-  // 直にDB検索（RSCなので可能）
-  const skills = await prisma.skill.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 20,
-  });
+// 新着をどのくらいの頻度で更新したいか
+export const revalidate = 60; // 60秒ごとにISR
 
-  const session = await getServerSession(authOptions); // 未ログインなら null
+type PageProps = {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
+
+const PAGE_SIZE = 12;
+
+export default async function HomePage({ searchParams }: PageProps) {
+  // 🟡 まず await して中身を取り出す
+  const sp = await searchParams;
+
+  // searchParams を素直なオブジェクトに整形
+  const raw = {
+    q: typeof sp.q === "string" ? sp.q : undefined,
+    category: typeof sp.category === "string" ? sp.category : undefined,
+    area: typeof sp.area === "string" ? sp.area : undefined,
+    page: typeof sp.page === "string" ? sp.page : undefined,
+  };
+
+  const result = SkillSearchSchema.safeParse(raw);
+  const parsed = result.success ? result.data : {};
+
+  const page = parsed.page ?? 1;
+
+  // Prisma の where 条件を組み立て
+  const where: any = {};
+
+  if (parsed.q) {
+    where.OR = [
+      { title: { contains: parsed.q } },
+      { description: { contains: parsed.q } },
+    ];
+  }
+
+  if (parsed.category) {
+    where.category = parsed.category;
+  }
+
+  if (parsed.area) {
+    where.area = parsed.area;
+  }
+
+  const [skills, totalCount] = await Promise.all([
+    prisma.skill.findMany({
+      where,
+      orderBy: { createdAt: "desc" }, // 新着順
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+      include: {
+        reviews: true, // 平均スコアを出すなら取っておく
+      },
+    }),
+    prisma.skill.count({ where }),
+  ]);
+
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
   return (
-    <main className="p-6 space-y-4">
-      <h1 className="text-xl font-bold">Skills</h1>
-      <CreateSkillForm />
-      <ul className="space-y-2">
-        {skills.map((s: any) => (
-          <li key={s.id} className="rounded border p-3">
-            <form action={deleteSkillAction}>
-              <input type="hidden" name="id" value={s.id} />
-              <button className="text-sm text-red-600 underline mt-2">
-                削除
-              </button>
-            </form>
-            <div className="font-medium">
-              {s.title} — ¥{s.price}
-            </div>
-            <div className="text-sm text-gray-600">{s.area}</div>
-            <p className="mt-1">{s.description}</p>
-          </li>
-        ))}
-      </ul>
+    <div className="mx-auto max-w-5xl px-4 py-8 space-y-8">
+      {/* 検索フォーム */}
+      <SkillSearchForm initialValues={parsed} />
 
-      <h1>Auth.js (v4) minimal</h1>
-      {session ? <SignOutButton /> : <SignInButton />}
-      {session ? (
-        <p>Signed in as {session.user?.name ?? session.user?.email}</p>
-      ) : (
-        <p>Not signed in</p>
+      {/* 新着スキル / 検索結果 */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold">
+          {parsed.q || parsed.category || parsed.area
+            ? "検索結果"
+            : "新着スキル"}
+        </h2>
+        <SkillList skills={skills} />
+      </section>
+
+      {/* ページネーション（必要なら） */}
+      {totalPages > 1 && (
+        <div className="flex justify-center gap-2">
+          {/* ここはあとで shadcn/ui の Pagination に差し替えてOK */}
+          <span className="text-sm text-muted-foreground">
+            {page} / {totalPages} ページ
+          </span>
+        </div>
       )}
-
-      <h1 style={{ fontSize: 20, fontWeight: 600 }}>Home</h1>
-      <p>
-        <Link href="/users">/users へ</Link>
-      </p>
-
-      <h1 className="text-2xl font-bold">shadcn/ui + Tailwind v4</h1>
-      <Button>Click me</Button>
-      <h1 className="text-3xl font-bold text-blue-500">Hello Tailwind v4</h1>
-    </main>
+    </div>
   );
 }

@@ -11,10 +11,24 @@ datasource db {
 }
 
 model Skill {
-  id          String   @id @default(cuid())
+  id          Int      @id @default(autoincrement())
   title       String
   description String
   price       Int
+  category    String
   area        String
   createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  reviews     Review[]
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+
+  skillId   Int
+  skill     Skill   @relation(fields: [skillId], references: [id])
 }
