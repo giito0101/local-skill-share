@@ -12,7 +12,8 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       // IDをセッションで使いたい“場合だけ”入れる（不要なら削除OK）
       if (token?.sub && session.user) {
-        (session.user as any).id = token.sub;
+        // (session.user as any).id = token.sub;
+        (session.user as any).id = "cmismhol100001ei6fp38vz6m";
       }
       return session;
     },
