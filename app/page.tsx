@@ -2,6 +2,10 @@ import { prisma } from "@/lib/prisma";
 import { SkillSearchSchema } from "@/lib/validations";
 import { SkillSearchForm } from "@/app/components/skills/skill-search-form";
 import { SkillList } from "@/app/components/skills/skill-list";
+import Link from "next/link";
+import { authOptions } from "./api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth";
+import { SignInButton, SignOutButton } from "./components/AuthButtons";
 
 // 新着をどのくらいの頻度で更新したいか
 export const revalidate = 60; // 60秒ごとにISR
@@ -62,6 +66,8 @@ export default async function HomePage({ searchParams }: PageProps) {
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
+  const session = await getServerSession(authOptions); // 未ログインなら null
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 space-y-8">
       {/* 検索フォーム */}
@@ -86,6 +92,25 @@ export default async function HomePage({ searchParams }: PageProps) {
           </span>
         </div>
       )}
+      <div>
+        <Link
+          href="/reservations/my"
+          className="underline !text-blue-600 hover:!text-blue-800"
+        >
+          予約一覧
+        </Link>
+      </div>
+
+      <div>
+        <div>{session ? <SignOutButton /> : <SignInButton />}</div>
+        <div>
+          {session ? (
+            <p>Signed in as {session.user?.name ?? session.user?.email}</p>
+          ) : (
+            <p>Not signed in</p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
