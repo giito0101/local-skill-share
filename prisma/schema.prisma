@@ -38,12 +38,21 @@ model Review {
   skill   Skill @relation(fields: [skillId], references: [id])
 }
 
+enum ReservationStatus {
+  PENDING    // 依頼中
+  CONFIRMED  // 承認済み
+  CANCELED   // キャンセル
+}
+
 model Reservation {
   id      String   @id @default(cuid())
   ownerId String
   skillId Int
   date    DateTime
   message String?
+
+  status  ReservationStatus @default(PENDING)
+
   owner   User     @relation(fields: [ownerId], references: [id])
   skill   Skill    @relation(fields: [skillId], references: [id])
 

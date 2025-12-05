@@ -6,6 +6,7 @@ export async function createSkill(data: {
   category: string;
   price: number;
   area: string;
+  ownerId: string;
 }) {
   return prisma.skill.create({ data });
 }

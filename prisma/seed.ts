@@ -234,6 +234,7 @@ async function main() {
         skillId: skill2.id, // 浦安 犬
         date: daysAgo(-1), // 1日後
         message: "吠え癖について相談したいです。",
+        status: "PENDING", // まだ受付中
         createdAt: now,
       },
       {
@@ -242,6 +243,7 @@ async function main() {
         skillId: skill1.id, // 英会話
         date: daysAgo(-2),
         message: "発音中心でお願いしたいです。",
+        status: "CONFIRMED", // 承認済み
         createdAt: now,
       },
       {
@@ -250,6 +252,7 @@ async function main() {
         skillId: skill4.id, // 写真
         date: daysAgo(-3),
         message: "転職用のプロフィール写真を撮りたいです。",
+        status: "CANCELED", // キャンセル済み
         createdAt: now,
       },
     ],
