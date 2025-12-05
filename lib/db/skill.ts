@@ -9,3 +9,9 @@ export async function createSkill(data: {
 }) {
   return prisma.skill.create({ data });
 }
+
+export async function getSkillById(id: number) {
+  return prisma.skill.findUnique({
+    where: { id },
+  });
+}
