@@ -7,6 +7,7 @@ export async function createSkillAction(formData: FormData) {
   const title = String(formData.get("title") || "");
   const description = String(formData.get("description") || "");
   const price = Number(formData.get("price") || 0);
+  const category = String(formData.get("category") || "");
   const area = String(formData.get("area") || "");
 
   if (!title || !description || !area || price <= 0) {
@@ -14,7 +15,7 @@ export async function createSkillAction(formData: FormData) {
   }
 
   await prisma.skill.create({
-    data: { title, description, price, area },
+    data: { title, description, price, category, area },
   });
 
   // トップページのキャッシュを最新化（ISR/キャッシュ戦略に関わらず安全）
@@ -23,6 +24,6 @@ export async function createSkillAction(formData: FormData) {
 
 export async function deleteSkillAction(formData: FormData) {
   const id = String(formData.get("id") ?? "");
-  await prisma.skill.delete({ where: { id } });
+  await prisma.skill.delete({ where: { id: Number(id) } });
   revalidatePath("/");
 }
