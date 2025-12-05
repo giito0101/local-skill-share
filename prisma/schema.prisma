@@ -22,43 +22,68 @@ model Skill {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  reviews     Review[]
+  reviews      Review[]
   reservations Reservation[]
 }
 
 model Review {
   id        Int      @id @default(autoincrement())
-  ownerId     String
+  ownerId   String
   rating    Int
   comment   String?
-  owner       User     @relation(fields: [ownerId], references: [id])
+  owner     User     @relation(fields: [ownerId], references: [id])
   createdAt DateTime @default(now())
 
-  skillId   Int
-  skill     Skill   @relation(fields: [skillId], references: [id])
+  skillId Int
+  skill   Skill @relation(fields: [skillId], references: [id])
 }
 
 model Reservation {
-  id        String   @id @default(cuid())
-  ownerId     String
-  skillId   Int
-  date      DateTime
-  message   String?
-  owner       User     @relation(fields: [ownerId], references: [id])
-  skill  Skill  @relation(fields: [skillId], references: [id])
+  id      String   @id @default(cuid())
+  ownerId String
+  skillId Int
+  date    DateTime
+  message String?
+  owner   User     @relation(fields: [ownerId], references: [id])
+  skill   Skill    @relation(fields: [skillId], references: [id])
 
   createdAt DateTime @default(now())
 }
 
 model User {
-  id            String   @id @default(cuid())
-  name          String
-  email         String   @unique
-  passwordHash  String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  skills        Skill[]
-  reviews       Review[]
-  reservations  Reservation[]
+  skills       Skill[]
+  reviews      Review[]
+  reservations Reservation[]
+
+  conversationsAsUserA Conversation[] @relation("UserA")
+  conversationsAsUserB Conversation[] @relation("UserB")
+
+  messagesSent Message[]
+}
+
+model Conversation {
+  id        String    @id @default(cuid())
+  userAId   String
+  userBId   String
+  userA     User      @relation("UserA", fields: [userAId], references: [id])
+  userB     User      @relation("UserB", fields: [userBId], references: [id])
+  messages  Message[]
+  createdAt DateTime  @default(now())
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  senderId       String
+  sender         User         @relation(fields: [senderId], references: [id])
+  body           String
+  createdAt      DateTime     @default(now())
 }
