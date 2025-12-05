@@ -5,7 +5,7 @@ import { SkillList } from "@/app/components/skills/skill-list";
 import Link from "next/link";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
-import { SignInButton, SignOutButton } from "./components/AuthButtons";
+import { SignInButton, SignOutButton } from "./components/auth-button";
 
 // 新着をどのくらいの頻度で更新したいか
 export const revalidate = 60; // 60秒ごとにISR

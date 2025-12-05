@@ -14,7 +14,9 @@ export const authOptions: NextAuthOptions = {
       if (token?.sub && session.user) {
         // (session.user as any).id = token.sub;
         // Chat確認用
-        (session.user as any).id = "cmismhol100001ei6fp38vz6m";
+        // (session.user as any).id = "cmisvrfo100006yi66oc475zc";
+        // MyPage確認用
+        (session.user as any).id = "cmisvrfo100006yi66oc475zc";
       }
       return session;
     },
