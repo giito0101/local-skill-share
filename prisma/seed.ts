@@ -1,7 +1,10 @@
+// prisma/seed.ts
 import { prisma } from "../lib/prisma";
 
 async function main() {
-  // 開発用なので一旦全部消す
+  // 開発用なので一旦全部消す（依存関係の弱い順に）
+  await prisma.message.deleteMany();
+  await prisma.conversation.deleteMany();
   await prisma.review.deleteMany();
   await prisma.reservation.deleteMany();
   await prisma.skill.deleteMany();
@@ -11,7 +14,9 @@ async function main() {
   const daysAgo = (days: number) =>
     new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
 
-  // ユーザーを何人か作る
+  // ===========================
+  // User
+  // ===========================
   const alice = await prisma.user.create({
     data: {
       name: "Alice",
@@ -154,7 +159,6 @@ async function main() {
     },
   });
 
-  // 追加のスキル（検索・カテゴリのバリエーション増やす用）
   const skill6 = await prisma.skill.create({
     data: {
       ownerId: carol.id,
@@ -249,6 +253,84 @@ async function main() {
         createdAt: now,
       },
     ],
+  });
+
+  // ===========================
+  // Conversation + Message サンプル
+  // ===========================
+
+  // Alice ↔ Bob の会話
+  const convAliceBob = await prisma.conversation.create({
+    data: {
+      userAId: alice.id,
+      userBId: bob.id,
+      createdAt: daysAgo(1),
+      messages: {
+        create: [
+          {
+            senderId: alice.id,
+            body: "こんにちは！英会話レッスンのことで相談させてください。",
+            createdAt: daysAgo(1),
+          },
+          {
+            senderId: bob.id,
+            body: "こんにちは！もちろんです。どのあたりが不安ですか？",
+            createdAt: daysAgo(1),
+          },
+          {
+            senderId: alice.id,
+            body: "発音と、実際に話すときに頭が真っ白になるのが心配です。",
+            createdAt: daysAgo(1),
+          },
+        ],
+      },
+    },
+  });
+
+  // Alice ↔ Carol の会話
+  const convAliceCarol = await prisma.conversation.create({
+    data: {
+      userAId: alice.id,
+      userBId: carol.id,
+      createdAt: daysAgo(2),
+      messages: {
+        create: [
+          {
+            senderId: carol.id,
+            body: "この前の PC 初期設定ありがとうございました！",
+            createdAt: daysAgo(2),
+          },
+          {
+            senderId: alice.id,
+            body: "こちらこそ、また何かあれば気軽に相談してください〜",
+            createdAt: daysAgo(2),
+          },
+        ],
+      },
+    },
+  });
+
+  // Bob ↔ Carol の会話（軽め）
+  const convBobCarol = await prisma.conversation.create({
+    data: {
+      userAId: bob.id,
+      userBId: carol.id,
+      createdAt: daysAgo(3),
+      messages: {
+        create: [
+          {
+            senderId: bob.id,
+            body: "ストレッチレッスン、平日夜にもやってますか？",
+            createdAt: daysAgo(3),
+          },
+          {
+            senderId: carol.id,
+            body: "はい、20時以降なら調整できます！",
+            createdAt: daysAgo(3),
+          },
+        ],
+      },
+    },
   });
 
   console.log("Seed done ✅");
