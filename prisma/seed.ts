@@ -1,4 +1,5 @@
 // prisma/seed.ts
+import { SkillCategory } from "@/app/generated/prisma/enums";
 import { prisma } from "../lib/prisma";
 
 async function main() {
@@ -50,7 +51,7 @@ async function main() {
       title: "初心者向け英会話レッスン",
       description: "カフェでゆるく英会話を練習します。",
       price: 2000,
-      category: "語学",
+      category: SkillCategory.ENGLISH, // ← 語学
       area: "新宿",
       createdAt: daysAgo(3),
       reviews: {
@@ -76,7 +77,7 @@ async function main() {
       title: "浦安エリアの犬のしつけ相談",
       description: "吠え癖やお散歩の悩みを一緒に解決します。",
       price: 3000,
-      category: "ペット",
+      category: SkillCategory.DOG_TRAINING, // ← ペット
       area: "浦安",
       createdAt: daysAgo(1),
       reviews: {
@@ -97,7 +98,7 @@ async function main() {
       title: "PC 初期設定お手伝い",
       description: "Wi-Fi 設定・プリンタ接続などを代行します。",
       price: 1500,
-      category: "PC・IT",
+      category: SkillCategory.PC_SUPPORT, // ← PC・IT
       area: "世田谷",
       createdAt: daysAgo(7),
       reviews: {
@@ -118,9 +119,9 @@ async function main() {
       title: "写真撮影（プロフィール・SNS 用）",
       description: "自然な雰囲気でプロフィール写真を撮ります。",
       price: 5000,
-      category: "写真",
+      category: SkillCategory.PHOTO, // ← 写真
       area: "渋谷",
-      createdAt: daysAgo(0), // 今日
+      createdAt: daysAgo(0),
       reviews: {
         create: [
           {
@@ -144,7 +145,7 @@ async function main() {
       title: "在宅ワーク向けストレッチレッスン",
       description: "肩こり・腰痛対策の簡単なストレッチを教えます。",
       price: 2500,
-      category: "健康",
+      category: SkillCategory.OTHER, // ← 健康
       area: "池袋",
       createdAt: daysAgo(5),
       reviews: {
@@ -165,7 +166,7 @@ async function main() {
       title: "JavaScript/TypeScript コードレビュー",
       description: "初学者向けにコードの改善ポイントをフィードバックします。",
       price: 4000,
-      category: "プログラミング",
+      category: SkillCategory.OTHER, // ← プログラミング
       area: "オンライン",
       createdAt: daysAgo(2),
       reviews: {
@@ -186,7 +187,7 @@ async function main() {
       title: "家庭料理 基本レッスン",
       description: "一人暮らし向けの簡単な定番メニューを一緒に作ります。",
       price: 3000,
-      category: "料理",
+      category: SkillCategory.OTHER, // ← 料理
       area: "中野",
       createdAt: daysAgo(4),
       reviews: {
@@ -208,7 +209,7 @@ async function main() {
       description:
         "駆け出しエンジニア向けにキャリア・ポートフォリオ相談にのります。",
       price: 0,
-      category: "キャリア",
+      category: SkillCategory.OTHER, // ← キャリア
       area: "オンライン",
       createdAt: daysAgo(6),
       reviews: {
