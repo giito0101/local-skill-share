@@ -1,40 +1,79 @@
 "use server";
 
-import { createSkill } from "@/lib/db/skill";
-import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { prisma } from "@/lib/prisma";
+import { createSkillSchema } from "@/lib/validators/skill";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { put } from "@vercel/blob";
 
-// server action: 状態を返す
-export type FormState = { ok: boolean };
+export type FormState = {
+  ok: boolean;
+  errors?: Record<string, string[]>;
+};
 
 export async function createSkillAction(
   prevState: FormState,
   formData: FormData
 ): Promise<FormState> {
+  // ① 認証チェック
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
-    return { ok: false };
+    return {
+      ok: false,
+      errors: {
+        _form: ["スキルを投稿するにはログインが必要です。"],
+      },
+    };
   }
 
-  const title = formData.get("title") as string;
-  const description = formData.get("description") as string;
-  const category = formData.get("category") as string;
-  const price = Number(formData.get("price"));
-  const area = formData.get("area") as string;
-  const ownerId = session.user.id;
+  // ② Zod でテキスト項目をバリデーション
+  const raw = {
+    title: formData.get("title"),
+    description: formData.get("description"),
+    price: formData.get("price"),
+    area: formData.get("area"),
+    category: formData.get("category"),
+  };
 
-  await createSkill({
-    title,
-    description,
-    category,
-    price,
-    area,
-    ownerId,
+  const result = createSkillSchema.safeParse(raw);
+  if (!result.success) {
+    return {
+      ok: false,
+      errors: result.error.flatten().fieldErrors,
+    };
+  }
+
+  const data = result.data; // price は number などに変換済み想定
+
+  // ③ 画像（任意）を Vercel Blob にアップロード
+  let imageUrl: string | undefined = undefined;
+  const file = formData.get("image") as File | null;
+
+  // ★ 開発中はここの Blob アップロードをコメントアウトしておけばトークン不要
+  // if (file && file.size > 0) {
+  //   const blob = await put(`skills/${crypto.randomUUID()}-${file.name}`, file, {
+  //     access: "public",
+  //     addRandomSuffix: true,
+  //   });
+  //   imageUrl = blob.url;
+  // }
+
+  // ④ Prisma で Skill 作成
+  const skill = await prisma.skill.create({
+    data: {
+      title: data.title,
+      description: data.description,
+      price: data.price,
+      area: data.area,
+      category: data.category as any, // enum 型なら as const 側と合わせてOK
+      imageUrl,
+      ownerId: session.user.id,
+    },
   });
 
-  // 一覧をリロードする
+  // ⑤ 一覧を再検証 & 詳細ページへリダイレクト
   revalidatePath("/skills");
-
-  return { ok: true };
+  redirect(`/skills/${skill.id}`);
 }

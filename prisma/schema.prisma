@@ -10,6 +10,14 @@ datasource db {
   provider = "sqlite"
 }
 
+enum SkillCategory {
+  ENGLISH
+  DOG_TRAINING
+  PC_SUPPORT
+  PHOTO
+  OTHER
+}
+
 model Skill {
   id          Int      @id @default(autoincrement())
   ownerId     String
@@ -18,6 +26,7 @@ model Skill {
   price       Int
   category    String
   area        String
+  imageUrl    String?       // 画像の URL を保存
   owner       User     @relation(fields: [ownerId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
