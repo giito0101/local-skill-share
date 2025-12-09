@@ -24,7 +24,7 @@ model Skill {
   title       String
   description String
   price       Int
-  category    String
+  category    SkillCategory
   area        String
   imageUrl    String?       // 画像の URL を保存
   owner       User     @relation(fields: [ownerId], references: [id])
