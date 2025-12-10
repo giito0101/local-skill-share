@@ -1,31 +1,87 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { getMyPageUser } from "@/lib/db/mypage";
 import { redirect } from "next/navigation";
-import { UserInfo } from "../components/mypage/user-info";
-import { Skill } from "../components/mypage/skill";
-import { Reservation } from "../components/mypage/reservation";
+import { prisma } from "@/lib/prisma";
+import { ProfileForm } from "./components/ProfileForm";
+import { SkillList } from "./components/SkillList";
+import { ReservationList } from "./components/ReservationList";
 
 export default async function MyPage() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
-    redirect("/");
+    redirect("/api/auth/signin?callbackUrl=/mypage");
   }
 
-  const user = await getMyPageUser(session.user.id);
+  const userId = session.user.id;
+
+  const [user, skills, reservations] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        bio: true,
+        image: true,
+      },
+    }),
+    prisma.skill.findMany({
+      where: { ownerId: userId },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+      },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.reservation.findMany({
+      where: {
+        skill: { ownerId: userId },
+      },
+      include: {
+        skill: { select: { title: true } },
+        owner: { select: { name: true } },
+      },
+      orderBy: { date: "desc" },
+    }),
+  ]);
 
   if (!user) {
-    // ありえないけど保険
-    return <p>ユーザー情報が見つかりません。</p>;
+    redirect("/"); // ユーザーが見つからない異常系
   }
 
-  return (
-    <>
-      {/* <pre>{JSON.stringify(user, null, 2)}</pre> */}
+  const reservationItems = reservations.map((r) => ({
+    id: r.id,
+    date: r.date.toLocaleString("ja-JP"),
+    message: r.message ?? "（メッセージなし）",
+    status: r.status,
+    skillTitle: r.skill.title,
+    requesterName: r.owner.name ?? "名無しさん",
+  }));
 
-      <UserInfo user={user} />
-      <Skill user={user} />
-      <Reservation user={user} />
-    </>
+  return (
+    <div className="max-w-4xl mx-auto py-8 space-y-8">
+      <section>
+        <h1 className="text-xl font-semibold mb-4">マイページ</h1>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold">プロフィール</h2>
+        <ProfileForm
+          defaultName={user.name ?? ""}
+          defaultBio={user.bio}
+          defaultImageUrl={user.image}
+        />
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold">あなたのスキル</h2>
+        <SkillList skills={skills} />
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold">予約リクエスト</h2>
+        <ReservationList reservations={reservationItems} />
+      </section>
+    </div>
   );
 }

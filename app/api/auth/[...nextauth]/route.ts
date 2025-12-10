@@ -16,7 +16,7 @@ export const authOptions: NextAuthOptions = {
         // Chat確認用
         // (session.user as any).id = "cmisvrfo100006yi66oc475zc";
         // MyPage確認用
-        (session.user as any).id = "cmizlj0bs00003fi6uqr73g97";
+        (session.user as any).id = "cmizlj0bw00023fi6p4uvp1ni";
       }
       return session;
     },
