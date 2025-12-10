@@ -1,39 +1,70 @@
+import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"; // ここから options を再利用
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
+import { MyReservationsView } from "./view";
+import { ReservationStatus } from "@/app/generated/prisma/enums";
 
-export default async function MyReservationsPage() {
+type SearchParams = {
+  tab?: string; // "future" | "past"
+  page?: string;
+};
+
+const PAGE_SIZE = 10;
+
+export default async function MyReservationsPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
   const session = await getServerSession(authOptions);
-  if (!(session && (session.user as any)?.id)) {
-    return <p>ログインしてください。</p>;
+  if (!session?.user?.id) {
+    redirect("/api/auth/signin"); // v4 なのでこれでOK
   }
 
-  const reservations = await prisma.reservation.findMany({
-    where: { ownerId: (session.user as any)?.id },
-    include: { skill: true },
-    orderBy: { date: "asc" },
-  });
+  const userId = session.user.id;
+
+  // tab: future | past
+  const tab = searchParams.tab === "past" ? "past" : "future";
+  const page = Math.max(Number(searchParams.page) || 1, 1);
+
+  const now = new Date();
+
+  const baseWhere = {
+    ownerId: userId,
+    status: {
+      in: [ReservationStatus.PENDING, ReservationStatus.CONFIRMED],
+    },
+  };
+
+  const where =
+    tab === "future"
+      ? { ...baseWhere, date: { gte: now } }
+      : { ...baseWhere, date: { lt: now } };
+
+  const [reservations, totalCount] = await Promise.all([
+    prisma.reservation.findMany({
+      where,
+      orderBy: { date: tab === "future" ? "asc" : "desc" },
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+      include: {
+        skill: {
+          select: { id: true, title: true }, // スキル側は title だけ
+        },
+      },
+    }),
+    prisma.reservation.count({ where }),
+  ]);
+
+  const totalPages = Math.max(Math.ceil(totalCount / PAGE_SIZE), 1);
 
   return (
-    <div className="max-w-2xl mx-auto p-4 space-y-4">
-      <h1 className="text-xl font-bold">予約一覧</h1>
-
-      {reservations.length === 0 && (
-        <p className="text-gray-500">まだ予約はありません。</p>
-      )}
-
-      {reservations.map((r) => (
-        <div
-          key={r.id}
-          className="border rounded p-4 shadow-sm space-y-1 bg-white"
-        >
-          <p className="font-semibold">{r.skill.title}</p>
-          <p className="text-sm text-gray-600">
-            {new Date(r.date).toLocaleString("ja-JP")}
-          </p>
-          {r.message && <p className="text-sm text-gray-800">📩 {r.message}</p>}
-        </div>
-      ))}
-    </div>
+    <MyReservationsView
+      tab={tab}
+      page={page}
+      totalPages={totalPages}
+      reservations={reservations}
+    />
   );
 }

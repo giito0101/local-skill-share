@@ -58,14 +58,13 @@ model Reservation {
   ownerId String
   skillId Int
   date    DateTime
-  message String?
-
   status  ReservationStatus @default(PENDING)
+  message String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   owner   User     @relation(fields: [ownerId], references: [id])
   skill   Skill    @relation(fields: [skillId], references: [id])
-
-  createdAt DateTime @default(now())
 }
 
 model User {

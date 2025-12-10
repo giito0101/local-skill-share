@@ -229,31 +229,63 @@ async function main() {
   // ===========================
   await prisma.reservation.createMany({
     data: [
+      // ---- Alice ----
       {
         id: "r1",
         ownerId: alice.id, // 予約した人
         skillId: skill2.id, // 浦安 犬
-        date: daysAgo(-1), // 1日後
+        date: daysAgo(-1), // 1日後（未来）
         message: "吠え癖について相談したいです。",
-        status: "PENDING", // まだ受付中
+        status: "PENDING", // まだ受付中（未来タブ用）
         createdAt: now,
       },
       {
         id: "r2",
-        ownerId: bob.id,
+        ownerId: alice.id,
         skillId: skill1.id, // 英会話
-        date: daysAgo(-2),
+        date: daysAgo(2), // 2日前（過去）
         message: "発音中心でお願いしたいです。",
-        status: "CONFIRMED", // 承認済み
+        status: "CONFIRMED", // 承認済み（過去タブ用）
+        createdAt: now,
+      },
+
+      // ---- Bob ----
+      {
+        id: "r3",
+        ownerId: bob.id,
+        skillId: skill4.id, // 写真
+        date: daysAgo(0), // 今日（現在扱い：date >= now 側）
+        message: "転職用のプロフィール写真を撮りたいです。",
+        status: "CONFIRMED", // 確定済み（future タブ側で見える）
         createdAt: now,
       },
       {
-        id: "r3",
+        id: "r4",
+        ownerId: bob.id,
+        skillId: skill5.id, // ストレッチ
+        date: daysAgo(3), // 3日前（過去）
+        message: "在宅ワーク中の肩こり対策が知りたいです。",
+        status: "PENDING", // 過去だけど pending な例
+        createdAt: now,
+      },
+
+      // ---- Carol ----
+      {
+        id: "r5",
         ownerId: carol.id,
-        skillId: skill4.id, // 写真
-        date: daysAgo(-3),
-        message: "転職用のプロフィール写真を撮りたいです。",
-        status: "CANCELED", // キャンセル済み
+        skillId: skill3.id, // PC 初期設定
+        date: daysAgo(-2), // 2日後（未来）
+        message: "ノートPCの初期設定を一緒にお願いしたいです。",
+        status: "PENDING",
+        createdAt: now,
+      },
+      {
+        id: "r6",
+        ownerId: carol.id,
+        skillId: skill6.id, // JS/TSレビュー
+        date: daysAgo(5), // 5日前（過去）
+        message: "ポートフォリオ用コードのレビューをお願いしたいです。",
+        status: "CANCELED", // 過去＋キャンセル
         createdAt: now,
       },
     ],
