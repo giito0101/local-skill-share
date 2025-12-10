@@ -176,6 +176,8 @@ export async function updateReservationStatusAction(
       data: { status: nextStatus },
     });
 
+    revalidatePath("/mypage");
+
     return { ok: true };
   } catch (e) {
     console.error(e);
