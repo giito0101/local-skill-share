@@ -1,4 +1,4 @@
-// prisma/seed.ts
+import "dotenv/config";
 import { SkillCategory } from "@/app/generated/prisma/enums";
 import { prisma } from "../lib/prisma";
 
