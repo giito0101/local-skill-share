@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { Reservation, Skill } from "@/app/generated/prisma/client";
-import { cancelReservationAction } from "./actions";
+import { cancelReservationAction, startConversationAction } from "./actions";
 
 type ReservationWithSkill = Reservation & {
   skill: Pick<Skill, "id" | "title">;
@@ -101,6 +101,14 @@ export function MyReservationsView(props: {
                     <Button asChild variant="outline" size="sm">
                       <Link href={`/reservations/${r.id}`}>詳細</Link>
                     </Button>
+
+                    {/* チャットボタン */}
+                    <form action={startConversationAction} className="inline">
+                      <input type="hidden" name="reservationId" value={r.id} />
+                      <Button type="submit" variant="outline" size="sm">
+                        チャット
+                      </Button>
+                    </form>
 
                     {/* 未来 & 未キャンセルのみキャンセル表示 */}
                     {tab === "future" && r.status !== "CANCELED" && (

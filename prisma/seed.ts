@@ -295,9 +295,10 @@ async function main() {
   // Conversation + Message サンプル
   // ===========================
 
-  // Alice ↔ Bob の会話
+  // Alice ↔ Bob の会話（予約 r1 に紐づけ）
   const convAliceBob = await prisma.conversation.create({
     data: {
+      reservationId: "r1", // ★ 予約と 1:1 のチャット例
       userAId: alice.id,
       userBId: bob.id,
       createdAt: daysAgo(1),
@@ -323,7 +324,7 @@ async function main() {
     },
   });
 
-  // Alice ↔ Carol の会話
+  // Alice ↔ Carol の会話（予約に紐づけない、雑談的なチャット例）
   const convAliceCarol = await prisma.conversation.create({
     data: {
       userAId: alice.id,
@@ -346,7 +347,7 @@ async function main() {
     },
   });
 
-  // Bob ↔ Carol の会話（軽め）
+  // Bob ↔ Carol の会話（これも予約とは無関係なサンプル）
   const convBobCarol = await prisma.conversation.create({
     data: {
       userAId: bob.id,

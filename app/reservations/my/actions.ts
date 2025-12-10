@@ -45,3 +45,51 @@ export async function cancelReservationAction(formData: FormData) {
   // 今いるページに戻したい場合は redirect 先をうまく調整してもOK
   redirect("/reservations/my?tab=future");
 }
+
+// 既存の cancelReservationAction の下とかに追加
+export async function startConversationAction(formData: FormData) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    redirect("/api/auth/signin");
+  }
+  const userId = session.user.id;
+
+  const reservationId = formData.get("reservationId");
+  if (typeof reservationId !== "string") {
+    throw new Error("reservationId が不正です");
+  }
+
+  const reservation = await prisma.reservation.findUnique({
+    where: { id: reservationId },
+    include: {
+      skill: {
+        select: { ownerId: true },
+      },
+    },
+  });
+
+  if (!reservation) {
+    throw new Error("予約が見つかりません");
+  }
+  const otherUserId =
+    reservation.ownerId === userId
+      ? reservation.skill.ownerId
+      : reservation.ownerId;
+
+  // すでにこの予約に紐づく会話があればそれを使う
+  let conversation = await prisma.conversation.findUnique({
+    where: { reservationId: reservation.id },
+  });
+
+  if (!conversation) {
+    conversation = await prisma.conversation.create({
+      data: {
+        reservationId: reservation.id,
+        userAId: userId,
+        userBId: otherUserId,
+      },
+    });
+  }
+
+  redirect(`/conversations/${conversation.id}`);
+}
