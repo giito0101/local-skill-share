@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { SkillCategory } from "@/app/generated/prisma/enums";
+import { SkillCategory, ReservationStatus } from "@/app/generated/prisma/enums";
 import { prisma } from "../lib/prisma";
 
 async function main() {
@@ -51,7 +51,7 @@ async function main() {
       title: "初心者向け英会話レッスン",
       description: "カフェでゆるく英会話を練習します。",
       price: 2000,
-      category: SkillCategory.ENGLISH, // ← 語学
+      category: SkillCategory.ENGLISH, // 語学
       area: "新宿",
       createdAt: daysAgo(3),
       reviews: {
@@ -77,7 +77,7 @@ async function main() {
       title: "浦安エリアの犬のしつけ相談",
       description: "吠え癖やお散歩の悩みを一緒に解決します。",
       price: 3000,
-      category: SkillCategory.DOG_TRAINING, // ← ペット
+      category: SkillCategory.DOG_TRAINING, // ペット
       area: "浦安",
       createdAt: daysAgo(1),
       reviews: {
@@ -98,7 +98,7 @@ async function main() {
       title: "PC 初期設定お手伝い",
       description: "Wi-Fi 設定・プリンタ接続などを代行します。",
       price: 1500,
-      category: SkillCategory.PC_SUPPORT, // ← PC・IT
+      category: SkillCategory.PC_SUPPORT, // PC・IT
       area: "世田谷",
       createdAt: daysAgo(7),
       reviews: {
@@ -119,7 +119,7 @@ async function main() {
       title: "写真撮影（プロフィール・SNS 用）",
       description: "自然な雰囲気でプロフィール写真を撮ります。",
       price: 5000,
-      category: SkillCategory.PHOTO, // ← 写真
+      category: SkillCategory.PHOTO, // 写真
       area: "渋谷",
       createdAt: daysAgo(0),
       reviews: {
@@ -145,7 +145,7 @@ async function main() {
       title: "在宅ワーク向けストレッチレッスン",
       description: "肩こり・腰痛対策の簡単なストレッチを教えます。",
       price: 2500,
-      category: SkillCategory.OTHER, // ← 健康
+      category: SkillCategory.OTHER, // 健康
       area: "池袋",
       createdAt: daysAgo(5),
       reviews: {
@@ -166,7 +166,7 @@ async function main() {
       title: "JavaScript/TypeScript コードレビュー",
       description: "初学者向けにコードの改善ポイントをフィードバックします。",
       price: 4000,
-      category: SkillCategory.OTHER, // ← プログラミング
+      category: SkillCategory.OTHER, // プログラミング
       area: "オンライン",
       createdAt: daysAgo(2),
       reviews: {
@@ -187,7 +187,7 @@ async function main() {
       title: "家庭料理 基本レッスン",
       description: "一人暮らし向けの簡単な定番メニューを一緒に作ります。",
       price: 3000,
-      category: SkillCategory.OTHER, // ← 料理
+      category: SkillCategory.OTHER, // 料理
       area: "中野",
       createdAt: daysAgo(4),
       reviews: {
@@ -209,7 +209,7 @@ async function main() {
       description:
         "駆け出しエンジニア向けにキャリア・ポートフォリオ相談にのります。",
       price: 0,
-      category: SkillCategory.OTHER, // ← キャリア
+      category: SkillCategory.OTHER, // キャリア
       area: "オンライン",
       createdAt: daysAgo(6),
       reviews: {
@@ -236,7 +236,7 @@ async function main() {
         skillId: skill2.id, // 浦安 犬
         date: daysAgo(-1), // 1日後（未来）
         message: "吠え癖について相談したいです。",
-        status: "PENDING", // まだ受付中（未来タブ用）
+        status: ReservationStatus.PENDING, // まだ受付中（未来タブ用）
         createdAt: now,
       },
       {
@@ -245,7 +245,7 @@ async function main() {
         skillId: skill1.id, // 英会話
         date: daysAgo(2), // 2日前（過去）
         message: "発音中心でお願いしたいです。",
-        status: "CONFIRMED", // 承認済み（過去タブ用）
+        status: ReservationStatus.CONFIRMED, // 承認済み（過去タブ用）
         createdAt: now,
       },
 
@@ -256,7 +256,7 @@ async function main() {
         skillId: skill4.id, // 写真
         date: daysAgo(0), // 今日（現在扱い：date >= now 側）
         message: "転職用のプロフィール写真を撮りたいです。",
-        status: "CONFIRMED", // 確定済み（future タブ側で見える）
+        status: ReservationStatus.CONFIRMED, // 確定済み（future タブ側で見える）
         createdAt: now,
       },
       {
@@ -265,7 +265,7 @@ async function main() {
         skillId: skill5.id, // ストレッチ
         date: daysAgo(3), // 3日前（過去）
         message: "在宅ワーク中の肩こり対策が知りたいです。",
-        status: "PENDING", // 過去だけど pending な例
+        status: ReservationStatus.PENDING, // 過去だけど pending な例
         createdAt: now,
       },
 
@@ -276,7 +276,7 @@ async function main() {
         skillId: skill3.id, // PC 初期設定
         date: daysAgo(-2), // 2日後（未来）
         message: "ノートPCの初期設定を一緒にお願いしたいです。",
-        status: "PENDING",
+        status: ReservationStatus.PENDING,
         createdAt: now,
       },
       {
@@ -285,7 +285,7 @@ async function main() {
         skillId: skill6.id, // JS/TSレビュー
         date: daysAgo(5), // 5日前（過去）
         message: "ポートフォリオ用コードのレビューをお願いしたいです。",
-        status: "CANCELED", // 過去＋キャンセル
+        status: ReservationStatus.CANCELED, // 過去＋キャンセル
         createdAt: now,
       },
     ],
@@ -300,7 +300,6 @@ async function main() {
       skill: {
         select: { ownerId: true }, // 提供者
       },
-      // owner は使わなくても OK（ownerId をそのまま使う）
     },
   });
 
@@ -308,25 +307,26 @@ async function main() {
     const requesterId = reservation.ownerId; // 予約した人（依頼側）
     const providerId = reservation.skill.ownerId; // スキル提供者
 
-    // 自分のスキルは予約できない仕様にしたいなら、一応ガードしておく
+    // 自分のスキルは予約できない仕様にしたいなら、一応ガード
     if (requesterId === providerId) {
       continue;
     }
 
+    const firstMessageBody =
+      reservation.message ?? "はじめまして、予約させていただきました。";
+
     await prisma.conversation.create({
       data: {
         reservationId: reservation.id,
-
         requesterId,
         providerId,
-
-        createdAt: reservation.createdAt,
+        createdAt: reservation.createdAt, // 会話開始 = 予約作成と同じタイミング
 
         messages: {
           create: [
             {
               senderId: requesterId,
-              body: "はじめまして、予約させていただきました。",
+              body: firstMessageBody,
               createdAt: reservation.createdAt,
             },
             {
