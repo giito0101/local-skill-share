@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ReviewForm } from "./ReviewForm";
+import Image from "next/image";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -11,7 +12,7 @@ type Props = {
 
 export default async function SkillDetailPage({ params }: Props) {
   const { id } = await params;
-  if (Number.isNaN(id)) {
+  if (Number.isNaN(Number(id))) {
     notFound();
   }
 
@@ -37,28 +38,42 @@ export default async function SkillDetailPage({ params }: Props) {
   return (
     <div className="max-w-3xl mx-auto py-10 space-y-8">
       {/* 上部：スキル情報 */}
-      <section className="space-y-2">
-        <h1 className="text-2xl font-bold">{skill.title}</h1>
-        <p className="text-muted-foreground">{skill.description}</p>
-        <p>料金: {skill.price.toLocaleString()}円</p>
-        <p>エリア: {skill.area}</p>
+      <section className="space-y-4">
+        {/* 画像 */}
+        {skill.imageUrl && (
+          <div className="relative w-full aspect-video overflow-hidden rounded-md">
+            <Image
+              src={skill.imageUrl}
+              alt={skill.title}
+              fill
+              className="object-cover"
+            />
+          </div>
+        )}
 
-        {/* 平均評価 */}
-        <div className="mt-2">
-          {avgRating === null ? (
-            <p>まだレビューはありません</p>
-          ) : (
-            <p>
-              平均評価: {avgRating.toFixed(1)} / 5（{skill.reviews.length}件）
-            </p>
-          )}
-        </div>
+        <div className="space-y-2">
+          <h1 className="text-2xl font-bold">{skill.title}</h1>
+          <p className="text-muted-foreground">{skill.description}</p>
+          <p>料金: {skill.price.toLocaleString()}円</p>
+          <p>エリア: {skill.area}</p>
 
-        {/* 予約ボタン */}
-        <div className="mt-4">
-          <Link href={`/skills/${skill.id}/reserve`}>
-            <Button>このスキルを予約する</Button>
-          </Link>
+          {/* 平均評価 */}
+          <div className="mt-2">
+            {avgRating === null ? (
+              <p>まだレビューはありません</p>
+            ) : (
+              <p>
+                平均評価: {avgRating.toFixed(1)} / 5（{skill.reviews.length}件）
+              </p>
+            )}
+          </div>
+
+          {/* 予約ボタン */}
+          <div className="mt-4">
+            <Link href={`/skills/${skill.id}/reserve`}>
+              <Button>このスキルを予約する</Button>
+            </Link>
+          </div>
         </div>
       </section>
 
