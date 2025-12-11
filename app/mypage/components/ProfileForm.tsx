@@ -4,6 +4,8 @@ import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import type { ProfileFormState } from "../actions";
 import { updateProfileAction } from "../actions";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -34,19 +36,38 @@ export function ProfileForm({
   const [state, formAction] = useActionState(updateProfileAction, initialState);
 
   return (
-    <form action={formAction} className="space-y-3">
-      <div>
-        <label className="block text-sm font-medium mb-1">名前</label>
-        <input
-          name="name"
-          defaultValue={defaultName}
-          className="w-full rounded-md border px-3 py-2 text-sm"
-        />
+    <form action={formAction} className="space-y-4">
+      {/* 現在のアイコン表示（ここはそのままでもOK） */}
+      <div className="flex items-center gap-3">
+        <div className="h-16 w-16 rounded-full bg-gray-100 overflow-hidden">
+          {defaultImageUrl ? (
+            <img
+              src={defaultImageUrl}
+              alt="アイコン"
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-xs text-gray-400">
+              No Image
+            </div>
+          )}
+        </div>
+        <p className="text-xs text-gray-500">
+          現在のアイコンです。新しい画像をアップロードすると変更されます。
+        </p>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium mb-1">自己紹介</label>
+      {/* 名前 */}
+      <div className="space-y-1">
+        <Label htmlFor="name">名前</Label>
+        <Input id="name" name="name" defaultValue={defaultName} />
+      </div>
+
+      {/* 自己紹介 */}
+      <div className="space-y-1">
+        <Label htmlFor="bio">自己紹介</Label>
         <textarea
+          id="bio"
           name="bio"
           defaultValue={defaultBio ?? ""}
           rows={4}
@@ -54,18 +75,10 @@ export function ProfileForm({
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium mb-1">
-          アイコン画像 URL
-        </label>
-        <input
-          name="imageUrl"
-          defaultValue={defaultImageUrl ?? ""}
-          className="w-full rounded-md border px-3 py-2 text-sm"
-        />
-        <p className="mt-1 text-xs text-gray-500">
-          ※ まずは URL 入力版で OK（後でアップロード機能に差し替え）
-        </p>
+      {/* ★ 画像アップロード（任意）: Skill登録と同じスタイル */}
+      <div className="space-y-1">
+        <Label htmlFor="image">画像（任意）</Label>
+        <Input id="image" name="image" type="file" accept="image/*" />
       </div>
 
       {state.errors && (

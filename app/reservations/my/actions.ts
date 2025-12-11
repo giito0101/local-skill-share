@@ -6,10 +6,15 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
-export async function cancelReservationAction(formData: FormData) {
-  const id = formData.get("id");
+export async function updateReservationStatusAction(formData: FormData) {
+  const id = formData.get("reservationId");
+  const intent = formData.get("intent"); // "approve" or "cancel"
+
   if (typeof id !== "string") {
     throw new Error("予約IDが不正です。");
+  }
+  if (intent !== "approve" && intent !== "cancel") {
+    throw new Error("操作が不正です。");
   }
 
   const session = await getServerSession(authOptions);
@@ -21,28 +26,34 @@ export async function cancelReservationAction(formData: FormData) {
 
   const reservation = await prisma.reservation.findUnique({
     where: { id },
-  });
-
-  if (!reservation || reservation.ownerId !== userId) {
-    throw new Error("予約が見つからないか、操作権限がありません。");
-  }
-
-  const now = new Date();
-  if (reservation.date < now) {
-    throw new Error("過去の予約はキャンセルできません。");
-  }
-
-  await prisma.reservation.update({
-    where: { id },
-    data: {
-      status: "CANCELED",
+    include: {
+      skill: true,
     },
   });
 
-  // 一覧を再フェッチ
-  revalidatePath("/reservations/my");
+  if (!reservation) {
+    throw new Error("予約が見つかりません。");
+  }
 
-  // 今いるページに戻したい場合は redirect 先をうまく調整してもOK
+  // ★ ここがポイント：ホスト側（スキルの持ち主）チェック
+  if (reservation.skill.ownerId !== userId) {
+    throw new Error("操作権限がありません。");
+  }
+
+  const now = new Date();
+  // キャンセルのときだけ「過去はNG」にする例
+  if (intent === "cancel" && reservation.date < now) {
+    throw new Error("過去の予約はキャンセルできません。");
+  }
+
+  const status = intent === "approve" ? "CONFIRMED" : "CANCELED";
+
+  await prisma.reservation.update({
+    where: { id },
+    data: { status },
+  });
+
+  revalidatePath("/reservations/my");
   redirect("/reservations/my?tab=future");
 }
 

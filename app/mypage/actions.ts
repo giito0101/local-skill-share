@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { revalidatePath } from "next/cache";
+import { put } from "@vercel/blob";
 
 async function requireUser() {
   const session = await getServerSession(authOptions);
@@ -14,14 +15,10 @@ async function requireUser() {
   return session.user;
 }
 
+// ★ URL前提だった imageUrl を削除して、name / bio だけ Zod で見る
 const profileSchema = z.object({
   name: z.string().min(1, "名前は必須です"),
   bio: z.string().max(500, "自己紹介は500文字以内にしてください").optional(),
-  imageUrl: z
-    .string()
-    .url("画像 URL を入力してください")
-    .optional()
-    .or(z.literal("")), // 未入力許可
 });
 
 export type ProfileFormState = {
@@ -36,10 +33,10 @@ export async function updateProfileAction(
   try {
     const user = await requireUser();
 
+    // name / bio は Zod でチェック
     const parsed = profileSchema.safeParse({
       name: formData.get("name"),
       bio: formData.get("bio"),
-      imageUrl: formData.get("imageUrl"),
     });
 
     if (!parsed.success) {
@@ -49,16 +46,41 @@ export async function updateProfileAction(
       };
     }
 
-    const { name, bio, imageUrl } = parsed.data;
+    const { name, bio } = parsed.data;
+
+    // ★ ファイルは Zod ではなく生で扱う（Skill登録と同じノリ）
+    const imageFile = formData.get("image") as File | null; // ← ProfileForm の input name と合わせる
+
+    // 既存ユーザー情報を取得して、何もアップロードされなければそれを維持する
+    const currentUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: { image: true }, // User モデルのフィールド名に合わせて変更してね
+    });
+
+    let imageUrlToSave: string | null =
+      (currentUser?.image as string | null) ?? null;
+
+    // 新しいファイルが選択されていれば Blob にアップロード
+    if (imageFile && imageFile.size > 0) {
+      const { url } = await put(
+        `avatars/${crypto.randomUUID()}-${imageFile.name}`,
+        imageFile,
+        {
+          access: "public",
+        }
+      );
+      imageUrlToSave = url;
+    }
 
     await prisma.user.update({
       where: { id: user.id },
       data: {
         name,
         bio: bio ?? null,
-        image: imageUrl || null,
+        image: imageUrlToSave, // ★ DB側は普通の String のままでOK
       },
     });
+
     revalidatePath("/mypage");
 
     return { ok: true };
@@ -139,7 +161,7 @@ export type ReservationActionState = {
   error?: string;
 };
 
-export async function updateReservationStatusAction(
+export async function reviewReservationRequestAction(
   prev: ReservationActionState,
   formData: FormData
 ): Promise<ReservationActionState> {

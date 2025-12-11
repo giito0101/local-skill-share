@@ -14,11 +14,43 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { Reservation, Skill } from "@/app/generated/prisma/client";
-import { cancelReservationAction, startConversationAction } from "./actions";
+import {
+  updateReservationStatusAction,
+  startConversationAction,
+} from "./actions";
+import { useFormStatus } from "react-dom";
 
 type ReservationWithSkill = Reservation & {
   skill: Pick<Skill, "id" | "title">;
 };
+
+// ★ さっきの UI をコンポーネント化
+function ActionButtons() {
+  const { pending } = useFormStatus();
+
+  return (
+    <div className="flex gap-2">
+      <button
+        name="intent"
+        value="approve"
+        type="submit"
+        disabled={pending}
+        className="text-xs border rounded px-2 py-1"
+      >
+        {pending ? "処理中..." : "承認"}
+      </button>
+      <button
+        name="intent"
+        value="cancel"
+        type="submit"
+        disabled={pending}
+        className="text-xs border rounded px-2 py-1 text-red-600"
+      >
+        {pending ? "処理中..." : "キャンセル"}
+      </button>
+    </div>
+  );
+}
 
 export function MyReservationsView(props: {
   tab: "future" | "past";
@@ -111,12 +143,17 @@ export function MyReservationsView(props: {
                     </form>
 
                     {/* 未来 & 未キャンセルのみキャンセル表示 */}
-                    {tab === "future" && r.status !== "CANCELED" && (
-                      <form action={cancelReservationAction} className="inline">
-                        <input type="hidden" name="id" value={r.id} />
-                        <Button type="submit" variant="destructive" size="sm">
-                          キャンセル
-                        </Button>
+                    {tab === "future" && r.status === "PENDING" && (
+                      <form
+                        action={updateReservationStatusAction}
+                        className="inline-block ml-2"
+                      >
+                        <input
+                          type="hidden"
+                          name="reservationId"
+                          value={r.id}
+                        />
+                        <ActionButtons />
                       </form>
                     )}
                   </TableCell>
