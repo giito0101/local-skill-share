@@ -2,8 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client"
-    output   = "../app/generated/prisma"
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
 }
 
 datasource db {
@@ -78,23 +78,35 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-
   skills       Skill[]
   reviews      Review[]
   reservations Reservation[]
 
-  messages Message[] @relation("UserMessages") // 送信したメッセージ
+  messages                 Message[]      @relation("UserMessages") // 送信したメッセージ
+  // ★ 追加：依頼側として参加している会話
+  conversationsAsRequester Conversation[] @relation("ConversationRequester")
+  // ★ 追加：提供側として参加している会話
+  conversationsAsProvider  Conversation[] @relation("ConversationProvider")
 }
 
 model Conversation {
-  id            String   @id @default(cuid())
-  reservationId String?  @unique // ← 予約と 1:1
-  userAId       String
-  userBId       String
-  createdAt     DateTime @default(now())
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  reservation Reservation? @relation(fields: [reservationId], references: [id])
-  messages    Message[]
+  // 予約と 1:1 で紐づく
+  reservationId String      @unique
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+
+  // 依頼側
+  requesterId String
+  requester   User   @relation("ConversationRequester", fields: [requesterId], references: [id])
+
+  // 提供側
+  providerId String
+  provider   User   @relation("ConversationProvider", fields: [providerId], references: [id])
+
+  messages Message[]
 }
 
 model Message {

@@ -295,80 +295,50 @@ async function main() {
   // Conversation + Message サンプル
   // ===========================
 
-  // Alice ↔ Bob の会話（予約 r1 に紐づけ）
-  const convAliceBob = await prisma.conversation.create({
-    data: {
-      reservationId: "r1", // ★ 予約と 1:1 のチャット例
-      userAId: alice.id,
-      userBId: bob.id,
-      createdAt: daysAgo(1),
-      messages: {
-        create: [
-          {
-            senderId: alice.id,
-            body: "こんにちは！英会話レッスンのことで相談させてください。",
-            createdAt: daysAgo(1),
-          },
-          {
-            senderId: bob.id,
-            body: "こんにちは！もちろんです。どのあたりが不安ですか？",
-            createdAt: daysAgo(1),
-          },
-          {
-            senderId: alice.id,
-            body: "発音と、実際に話すときに頭が真っ白になるのが心配です。",
-            createdAt: daysAgo(1),
-          },
-        ],
+  const reservations = await prisma.reservation.findMany({
+    include: {
+      skill: {
+        select: { ownerId: true }, // 提供者
       },
+      // owner は使わなくても OK（ownerId をそのまま使う）
     },
   });
 
-  // Alice ↔ Carol の会話（予約に紐づけない、雑談的なチャット例）
-  const convAliceCarol = await prisma.conversation.create({
-    data: {
-      userAId: alice.id,
-      userBId: carol.id,
-      createdAt: daysAgo(2),
-      messages: {
-        create: [
-          {
-            senderId: carol.id,
-            body: "この前の PC 初期設定ありがとうございました！",
-            createdAt: daysAgo(2),
-          },
-          {
-            senderId: alice.id,
-            body: "こちらこそ、また何かあれば気軽に相談してください〜",
-            createdAt: daysAgo(2),
-          },
-        ],
-      },
-    },
-  });
+  for (const reservation of reservations) {
+    const requesterId = reservation.ownerId; // 予約した人（依頼側）
+    const providerId = reservation.skill.ownerId; // スキル提供者
 
-  // Bob ↔ Carol の会話（これも予約とは無関係なサンプル）
-  const convBobCarol = await prisma.conversation.create({
-    data: {
-      userAId: bob.id,
-      userBId: carol.id,
-      createdAt: daysAgo(3),
-      messages: {
-        create: [
-          {
-            senderId: bob.id,
-            body: "ストレッチレッスン、平日夜にもやってますか？",
-            createdAt: daysAgo(3),
-          },
-          {
-            senderId: carol.id,
-            body: "はい、20時以降なら調整できます！",
-            createdAt: daysAgo(3),
-          },
-        ],
+    // 自分のスキルは予約できない仕様にしたいなら、一応ガードしておく
+    if (requesterId === providerId) {
+      continue;
+    }
+
+    await prisma.conversation.create({
+      data: {
+        reservationId: reservation.id,
+
+        requesterId,
+        providerId,
+
+        createdAt: reservation.createdAt,
+
+        messages: {
+          create: [
+            {
+              senderId: requesterId,
+              body: "はじめまして、予約させていただきました。",
+              createdAt: reservation.createdAt,
+            },
+            {
+              senderId: providerId,
+              body: "ご予約ありがとうございます。当日はよろしくお願いします！",
+              createdAt: reservation.createdAt,
+            },
+          ],
+        },
       },
-    },
-  });
+    });
+  }
 
   console.log("Seed done ✅");
 }

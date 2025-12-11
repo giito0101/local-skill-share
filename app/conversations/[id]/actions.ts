@@ -26,7 +26,7 @@ export async function sendMessageAction(formData: FormData) {
     where: { id: conversationId },
   });
 
-  if (!conv || (conv.userAId !== userId && conv.userBId !== userId)) {
+  if (!conv || (conv.requesterId !== userId && conv.providerId !== userId)) {
     throw new Error("会話へのアクセス権がありません");
   }
 
