@@ -52,13 +52,13 @@ export async function createSkillAction(
   const file = formData.get("image") as File | null;
 
   // ★ 開発中はここの Blob アップロードをコメントアウトしておけばトークン不要
-  // if (file && file.size > 0) {
-  //   const blob = await put(`skills/${crypto.randomUUID()}-${file.name}`, file, {
-  //     access: "public",
-  //     addRandomSuffix: true,
-  //   });
-  //   imageUrl = blob.url;
-  // }
+  if (file && file.size > 0) {
+    const blob = await put(`skills/${crypto.randomUUID()}-${file.name}`, file, {
+      access: "public",
+      addRandomSuffix: true,
+    });
+    imageUrl = blob.url;
+  }
 
   // ④ Prisma で Skill 作成
   const skill = await prisma.skill.create({
