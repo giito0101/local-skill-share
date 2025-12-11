@@ -38,7 +38,8 @@ export default async function MyReservationsPage({
   if (tab === "future") {
     // 未来タブ → これから＆未キャンセル系だけ
     where = {
-      ownerId: userId,
+      // 自分が owner のスキルに対する予約
+      skill: { ownerId: userId },
       date: { gte: now },
       status: {
         in: [ReservationStatus.PENDING, ReservationStatus.CONFIRMED],
@@ -68,6 +69,10 @@ export default async function MyReservationsPage({
       include: {
         skill: {
           select: { id: true, title: true },
+        },
+        // 🔽 提供側画面なら「誰が予約したか」も欲しくなるかも
+        owner: {
+          select: { id: true, name: true },
         },
       },
     }),

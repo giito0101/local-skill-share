@@ -68,13 +68,18 @@ export async function startConversationAction(formData: FormData) {
     },
   });
 
-  if (!reservation) {
-    throw new Error("予約が見つかりません");
+  if (!reservation || !reservation.skill) {
+    throw new Error("予約またはスキルが見つかりません");
   }
-  const otherUserId =
-    reservation.ownerId === userId
-      ? reservation.skill.ownerId
-      : reservation.ownerId;
+
+  // ✅ 役割は常に Reservation / Skill から決める
+  const requesterId = reservation.ownerId; // 予約した人
+  const providerId = reservation.skill.ownerId; // スキル提供者
+
+  // ログイン中ユーザーがそもそも関係者じゃない場合は弾く
+  if (userId !== requesterId && userId !== providerId) {
+    throw new Error("この予約の参加者ではありません");
+  }
 
   // すでにこの予約に紐づく会話があればそれを使う
   let conversation = await prisma.conversation.findUnique({
@@ -85,8 +90,8 @@ export async function startConversationAction(formData: FormData) {
     conversation = await prisma.conversation.create({
       data: {
         reservationId: reservation.id,
-        userAId: userId,
-        userBId: otherUserId,
+        requesterId,
+        providerId,
       },
     });
   }

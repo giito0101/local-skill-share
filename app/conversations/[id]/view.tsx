@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils"; // もしあるなら
+import Link from "next/link";
 
 type MessageWithSender = {
   id: string;
@@ -22,10 +23,12 @@ export function ConversationView({
   conversationId,
   currentUserId,
   messages,
+  backHref,
 }: {
   conversationId: string;
   currentUserId: string;
   messages: MessageWithSender[];
+  backHref: string; // 追加：戻り先
 }) {
   const formRef = useRef<HTMLFormElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
@@ -36,7 +39,13 @@ export function ConversationView({
 
   return (
     <div className="max-w-2xl mx-auto py-8 flex flex-col gap-4 h-[80vh]">
-      <h1 className="text-xl font-semibold">チャット</h1>
+      {/* ヘッダー行：戻るボタン + タイトル */}
+      <div className="flex items-center gap-3">
+        <Button variant="outline" size="sm" asChild>
+          <Link href={backHref}>← 戻る</Link>
+        </Button>
+        <h1 className="text-xl font-semibold">チャット</h1>
+      </div>
 
       {/* メッセージ一覧 */}
       <div className="flex-1 overflow-y-auto space-y-3 border rounded-lg p-3 bg-muted/40">
