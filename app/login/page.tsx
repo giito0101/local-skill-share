@@ -1,18 +1,14 @@
-"use client";
-
-import { signIn, useSession } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { LoginPageClient } from "./LoginPageClient";
-import type { ReactNode } from "react";
 
 type PageProps = {
-  searchParams: {
+  searchParams: Promise<{
     callbackUrl?: string;
-  };
+  }>;
 };
 
-export default function LoginPage({ searchParams }: PageProps) {
-  const callbackUrl = searchParams.callbackUrl ?? "/";
+export default async function LoginPage({ searchParams }: PageProps) {
+  const sp = await searchParams;
+  const callbackUrl = sp.callbackUrl ?? "/";
 
   return <LoginPageClient callbackUrl={callbackUrl} />;
 }
