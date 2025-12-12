@@ -1,16 +1,12 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { ProfileForm } from "./components/ProfileForm";
 import { SkillList } from "./components/SkillList";
 import { ReservationList } from "./components/ReservationList";
+import { requireSession } from "@/lib/require-session";
 
 export default async function MyPage() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
-    redirect("/api/auth/signin?callbackUrl=/mypage");
-  }
+  const session = await requireSession({ callbackUrl: `/mypage` });
 
   const userId = session.user.id;
 

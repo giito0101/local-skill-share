@@ -3,8 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { requireSession } from "@/lib/require-session";
 
 const reserveSchema = z.object({
   skillId: z.string(),
@@ -15,18 +14,15 @@ const reserveSchema = z.object({
 });
 
 export async function reserveAction(formData: FormData) {
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user?.id) {
-    // 念のためここでもチェック
-    redirect("/login");
-  }
-
   const raw = {
     skillId: formData.get("skillId"),
     date: formData.get("date"),
     message: formData.get("message"),
   };
+
+  const session = await requireSession({
+    callbackUrl: `/skills/${raw.skillId}/reserve`,
+  });
 
   const result = reserveSchema.safeParse(raw);
   if (!result.success) {

@@ -1,8 +1,7 @@
-import { redirect, notFound } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { ConversationView } from "./view";
+import { requireSession } from "@/lib/require-session";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -11,10 +10,8 @@ type PageProps = {
 export default async function ConversationPage({ params }: PageProps) {
   const { id } = await params; // Next 16 / React 19 仕様
 
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
-    redirect("/api/auth/signin");
-  }
+  const session = await requireSession({ callbackUrl: `/conversations/${id}` });
+
   const userId = session.user.id;
 
   const conversation = await prisma.conversation.findUnique({

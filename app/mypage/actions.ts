@@ -2,18 +2,9 @@
 
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { revalidatePath } from "next/cache";
 import { put } from "@vercel/blob";
-
-async function requireUser() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
-    throw new Error("ログインが必要です");
-  }
-  return session.user;
-}
+import { requireSession } from "@/lib/require-session";
 
 // ★ URL前提だった imageUrl を削除して、name / bio だけ Zod で見る
 const profileSchema = z.object({
@@ -31,7 +22,8 @@ export async function updateProfileAction(
   formData: FormData
 ): Promise<ProfileFormState> {
   try {
-    const user = await requireUser();
+    const session = await requireSession({ callbackUrl: `/mypage` });
+    const user = session.user;
 
     // name / bio は Zod でチェック
     const parsed = profileSchema.safeParse({
@@ -107,7 +99,8 @@ export async function deleteSkillAction(
   formData: FormData
 ): Promise<DeleteSkillState> {
   try {
-    const user = await requireUser();
+    const session = await requireSession({ callbackUrl: `/mypage` });
+    const user = session.user;
 
     const parsed = skillIdSchema.safeParse({
       skillId: formData.get("skillId"),
@@ -166,7 +159,8 @@ export async function reviewReservationRequestAction(
   formData: FormData
 ): Promise<ReservationActionState> {
   try {
-    const user = await requireUser();
+    const session = await requireSession({ callbackUrl: `/mypage` });
+    const user = session.user;
 
     const parsed = reservationSchema.safeParse({
       reservationId: formData.get("reservationId"),

@@ -1,9 +1,8 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { requireSession } from "@/lib/require-session";
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export type UpdateSkillState = {
   ok: boolean;
@@ -14,15 +13,12 @@ export async function updateSkillAction(
   prevState: UpdateSkillState,
   formData: FormData
 ): Promise<UpdateSkillState> {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
-    return { ok: false, error: "ログインしてください。" };
-  }
-
   const id = Number(formData.get("id"));
   const title = (formData.get("title") as string | null)?.trim() ?? "";
   const description =
     (formData.get("description") as string | null)?.trim() ?? "";
+
+  const session = await requireSession({ callbackUrl: `/skills/${id}/edit` });
 
   if (!title) {
     return { ok: false, error: "タイトルは必須です。" };

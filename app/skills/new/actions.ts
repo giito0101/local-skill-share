@@ -1,12 +1,12 @@
 "use server";
 
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 import { createSkillSchema } from "@/lib/validators/skill";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { put } from "@vercel/blob";
+import { authOptions } from "@/lib/auth";
 
 export type FormState = {
   ok: boolean;

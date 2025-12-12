@@ -1,10 +1,11 @@
 // app/skills/[id]/page.tsx
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ReviewForm } from "./ReviewForm";
 import Image from "next/image";
+import { requireSession } from "@/lib/require-session";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -12,6 +13,7 @@ type Props = {
 
 export default async function SkillDetailPage({ params }: Props) {
   const { id } = await params;
+
   if (Number.isNaN(Number(id))) {
     notFound();
   }
