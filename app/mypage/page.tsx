@@ -35,11 +35,17 @@ export default async function MyPage() {
     }),
     prisma.reservation.findMany({
       where: {
-        skill: { ownerId: userId },
+        ownerId: userId,
       },
       include: {
-        skill: { select: { title: true } },
+        skill: {
+          select: {
+            title: true,
+            owner: { select: { name: true } },
+          },
+        },
         owner: { select: { name: true } },
+        conversation: { select: { id: true } },
       },
       orderBy: { date: "desc" },
     }),
@@ -55,7 +61,8 @@ export default async function MyPage() {
     message: r.message ?? "（メッセージなし）",
     status: r.status,
     skillTitle: r.skill.title,
-    requesterName: r.owner.name ?? "名無しさん",
+    providerName: r.skill.owner?.name ?? "名無しさん",
+    conversationId: r.conversation?.id ?? null,
   }));
 
   return (

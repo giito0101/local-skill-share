@@ -231,26 +231,6 @@ async function main() {
     data: [
       // ---- Alice ----
       {
-        id: "r1",
-        ownerId: alice.id, // 予約した人
-        skillId: skill2.id, // 浦安 犬
-        date: daysAgo(-1), // 1日後（未来）
-        message: "吠え癖について相談したいです。",
-        status: ReservationStatus.PENDING, // まだ受付中（未来タブ用）
-        createdAt: now,
-      },
-      {
-        id: "r2",
-        ownerId: alice.id,
-        skillId: skill1.id, // 英会話
-        date: daysAgo(2), // 2日前（過去）
-        message: "発音中心でお願いしたいです。",
-        status: ReservationStatus.CONFIRMED, // 承認済み（過去タブ用）
-        createdAt: now,
-      },
-
-      // ---- Bob ----
-      {
         id: "r3",
         ownerId: bob.id,
         skillId: skill4.id, // 写真
@@ -260,8 +240,28 @@ async function main() {
         createdAt: now,
       },
       {
+        id: "r2",
+        ownerId: carol.id,
+        skillId: skill1.id, // 英会話
+        date: daysAgo(2), // 2日前（過去）
+        message: "発音中心でお願いしたいです。",
+        status: ReservationStatus.CONFIRMED, // 承認済み（過去タブ用）
+        createdAt: now,
+      },
+
+      // ---- Bob ----
+      {
+        id: "r1",
+        ownerId: alice.id, // 予約した人
+        skillId: skill2.id, // 浦安 犬
+        date: daysAgo(-1), // 1日後（未来）
+        message: "吠え癖について相談したいです。",
+        status: ReservationStatus.PENDING, // まだ受付中（未来タブ用）
+        createdAt: now,
+      },
+      {
         id: "r4",
-        ownerId: bob.id,
+        ownerId: carol.id,
         skillId: skill5.id, // ストレッチ
         date: daysAgo(3), // 3日前（過去）
         message: "在宅ワーク中の肩こり対策が知りたいです。",
@@ -272,7 +272,7 @@ async function main() {
       // ---- Carol ----
       {
         id: "r5",
-        ownerId: carol.id,
+        ownerId: bob.id,
         skillId: skill3.id, // PC 初期設定
         date: daysAgo(-2), // 2日後（未来）
         message: "ノートPCの初期設定を一緒にお願いしたいです。",
@@ -281,7 +281,7 @@ async function main() {
       },
       {
         id: "r6",
-        ownerId: carol.id,
+        ownerId: alice.id,
         skillId: skill6.id, // JS/TSレビュー
         date: daysAgo(5), // 5日前（過去）
         message: "ポートフォリオ用コードのレビューをお願いしたいです。",

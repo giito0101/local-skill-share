@@ -3,7 +3,11 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
-import { cancelReservationAction } from "../my/actions";
+import {
+  updateReservationStatusAction,
+  startConversationAction,
+} from "../my/actions";
+import { ActionButtons } from "@/app/reservations/components/ActionButtons";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -21,11 +25,18 @@ export default async function ReservationDetailPage({ params }: PageProps) {
   const reservation = await prisma.reservation.findUnique({
     where: { id },
     include: {
-      skill: { select: { title: true, description: true } },
+      skill: {
+        select: {
+          title: true,
+          description: true,
+          ownerId: true, // 👈 ここを追加
+        },
+      },
     },
   });
 
-  if (!reservation || reservation.ownerId !== session.user.id) {
+  // ✅ 「この予約がぶら下がっているスキルの持ち主」が自分かどうかで判定
+  if (!reservation || reservation.skill.ownerId !== session.user.id) {
     notFound();
   }
 
@@ -55,16 +66,24 @@ export default async function ReservationDetailPage({ params }: PageProps) {
       </div>
 
       <div className="flex gap-2">
-        <Button variant="outline" asChild>
+        {/* 一覧に戻る */}
+        <Button variant="outline" size="sm" asChild>
           <a href="/reservations/my">一覧に戻る</a>
         </Button>
 
-        {isFuture && reservation.status !== "CANCELED" && (
-          <form action={cancelReservationAction}>
-            <input type="hidden" name="id" value={reservation.id} />
-            <Button type="submit" variant="destructive">
-              この予約をキャンセル
-            </Button>
+        {/* チャットボタン */}
+        <form action={startConversationAction} className="inline">
+          <input type="hidden" name="reservationId" value={reservation.id} />
+          <Button type="submit" variant="outline" size="sm">
+            チャット
+          </Button>
+        </form>
+
+        {/* 未来 & PENDING のときだけ承認/キャンセル表示 */}
+        {isFuture && reservation.status === "PENDING" && (
+          <form action={updateReservationStatusAction} className="inline">
+            <input type="hidden" name="reservationId" value={reservation.id} />
+            <ActionButtons />
           </form>
         )}
       </div>
