@@ -22,6 +22,8 @@ import { useFormStatus } from "react-dom";
 
 type ReservationWithSkill = Reservation & {
   skill: Pick<Skill, "id" | "title">;
+  // 追加: 提供者視点の「予約された予約ID」
+  providerReservationId?: string | null;
 };
 
 // ★ さっきの UI をコンポーネント化
@@ -133,29 +135,6 @@ export function MyReservationsView(props: {
                     <Button asChild variant="outline" size="sm">
                       <Link href={`/reservations/${r.id}`}>詳細</Link>
                     </Button>
-
-                    {/* チャットボタン */}
-                    <form action={startConversationAction} className="inline">
-                      <input type="hidden" name="reservationId" value={r.id} />
-                      <Button type="submit" variant="outline" size="sm">
-                        チャット
-                      </Button>
-                    </form>
-
-                    {/* 未来 & 未キャンセルのみキャンセル表示 */}
-                    {tab === "future" && r.status === "PENDING" && (
-                      <form
-                        action={updateReservationStatusAction}
-                        className="inline-block ml-2"
-                      >
-                        <input
-                          type="hidden"
-                          name="reservationId"
-                          value={r.id}
-                        />
-                        <ActionButtons />
-                      </form>
-                    )}
                   </TableCell>
                 </TableRow>
               ))}

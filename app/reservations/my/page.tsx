@@ -46,15 +46,18 @@ export default async function MyReservationsPage({
       },
     };
   } else {
-    // 過去タブ → 全ての過去 + 未来のキャンセル
+    // 過去タブ → 自分の Skill に対する予約 かつ
+    //  1) 過去はステータス問わず全部
+    //  2) 未来だけどキャンセル済み
     where = {
-      ownerId: userId,
+      skill: { ownerId: userId }, // ★ ここを ownerId じゃなく skill.ownerId にする
       OR: [
-        // 1) 過去はステータス問わず全部
-        { date: { lt: now } },
-        // 2) 未来だけどキャンセル済み
+        { date: { lt: now } }, // 1) 過去は全部
         {
-          AND: [{ date: { gte: now } }, { status: ReservationStatus.CANCELED }],
+          AND: [
+            { date: { gte: now } }, // 2) 未来 & キャンセル済み
+            { status: ReservationStatus.CANCELED },
+          ],
         },
       ],
     };
