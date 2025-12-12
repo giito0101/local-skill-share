@@ -1,10 +1,9 @@
 "use server";
 
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { requireSession } from "@/lib/require-session";
 
 export async function updateReservationStatusAction(formData: FormData) {
   const id = formData.get("reservationId");
@@ -17,10 +16,7 @@ export async function updateReservationStatusAction(formData: FormData) {
     throw new Error("操作が不正です。");
   }
 
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
-    redirect("/api/auth/signin");
-  }
+  const session = await requireSession({ callbackUrl: `/reservations/my` });
 
   const userId = session.user.id;
 
@@ -59,10 +55,8 @@ export async function updateReservationStatusAction(formData: FormData) {
 
 // 既存の cancelReservationAction の下とかに追加
 export async function startConversationAction(formData: FormData) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
-    redirect("/api/auth/signin");
-  }
+  const session = await requireSession({ callbackUrl: `/reservations/my` });
+
   const userId = session.user.id;
 
   const reservationId = formData.get("reservationId");

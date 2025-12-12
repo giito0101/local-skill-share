@@ -1,19 +1,17 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"; // v4 用
 import { prisma } from "@/lib/prisma";
+import { requireSession } from "@/lib/require-session";
 
 export async function sendMessageAction(formData: FormData) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
-    redirect("/api/auth/signin");
-  }
-
-  const userId = session.user.id;
   const conversationId = formData.get("conversationId");
   const body = (formData.get("body") ?? "").toString().trim();
+
+  const session = await requireSession({
+    callbackUrl: `/conversations/${conversationId}`,
+  });
+  const userId = session.user.id;
 
   if (typeof conversationId !== "string" || !conversationId) {
     throw new Error("conversationId が不正です");

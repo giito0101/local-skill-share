@@ -1,8 +1,7 @@
 // app/conversations/start/page.tsx
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { requireSession } from "@/lib/require-session";
 
 type PageProps = {
   searchParams: Promise<{
@@ -13,10 +12,9 @@ type PageProps = {
 export default async function ConversationStartPage({
   searchParams,
 }: PageProps) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
-    redirect("/"); // or サインインページ
-  }
+  const session = await requireSession({
+    callbackUrl: `/conversations/start/`,
+  });
 
   const { reservationId } = await searchParams;
 

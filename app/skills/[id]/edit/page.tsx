@@ -1,18 +1,18 @@
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { EditSkillForm } from "./EditSkillForm";
+import { requireSession } from "@/lib/require-session";
 
 type Props = {
   params: Promise<{ id: string }>;
 };
 
 export default async function EditSkillPage({ params }: Props) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) redirect("/");
-
   const { id } = await params;
+
+  const session = await requireSession({
+    callbackUrl: `/skills/${id}}/edit`,
+  });
 
   const skillId = Number(id);
   if (Number.isNaN(skillId)) notFound();

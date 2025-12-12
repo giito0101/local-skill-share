@@ -1,20 +1,15 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"; // ここから options を再利用
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { ReservationForm } from "./ReservationForm";
-
+import { requireSession } from "@/lib/require-session";
 type Props = {
   params: Promise<{ id: string }>;
 };
 
 export default async function ReservePage({ params }: Props) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    redirect("/login");
-  }
-
   const { id } = await params;
+
+  await requireSession({ callbackUrl: `/skills/${id}/reserve` });
 
   const skill = await prisma.skill.findUnique({
     where: { id: Number(id) },

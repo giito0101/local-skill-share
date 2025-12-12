@@ -1,10 +1,7 @@
-// app/reservations/my/page.tsx
-import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 import { MyReservationsView } from "./view";
 import { ReservationStatus } from "@/app/generated/prisma/enums";
+import { requireSession } from "@/lib/require-session";
 
 type SearchParams = {
   tab?: string; // "future" | "past"
@@ -21,10 +18,7 @@ export default async function MyReservationsPage({
   // ✅ searchParams を一度 await してから使う
   const sp = await searchParams;
 
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
-    redirect("/api/auth/signin");
-  }
+  const session = await requireSession({ callbackUrl: `/reservations/my` });
 
   const userId = session.user.id;
 

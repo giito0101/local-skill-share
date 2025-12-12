@@ -1,6 +1,4 @@
-import { redirect, notFound } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,6 +6,7 @@ import {
   startConversationAction,
 } from "../my/actions";
 import { ActionButtons } from "@/app/reservations/components/ActionButtons";
+import { requireSession } from "@/lib/require-session";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -17,10 +16,7 @@ export default async function ReservationDetailPage({ params }: PageProps) {
   // ✅ Promise になっている params を await する
   const { id } = await params;
 
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
-    redirect("/api/auth/signin");
-  }
+  const session = await requireSession({ callbackUrl: `/reservations/${id}` });
 
   const reservation = await prisma.reservation.findUnique({
     where: { id },

@@ -3,8 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { requireSession } from "@/lib/require-session";
 
 const reviewSchema = z.object({
   rating: z
@@ -24,13 +23,9 @@ export async function createReviewAction(
   prevState: ReviewFormState,
   formData: FormData
 ): Promise<ReviewFormState> {
-  // 認証（auth or getServerSession、どちらでもOK）
-  // const session = await auth();
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user?.id) {
-    return { ok: false, error: "ログインが必要です" };
-  }
+  const session = await requireSession({
+    callbackUrl: `/skills/${skillId}/reserve`,
+  });
 
   // スキル存在チェック
   const skill = await prisma.skill.findUnique({

@@ -1,9 +1,8 @@
-import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { requireSession } from "@/lib/require-session";
 
 export default async function Dashboard() {
-  const session = await getServerSession(authOptions);
-  if (!session) redirect("/api/auth/signin");
+  const session = await requireSession({
+    callbackUrl: `/dashboard`,
+  });
   return <div>Private area</div>;
 }
