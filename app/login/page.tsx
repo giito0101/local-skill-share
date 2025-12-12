@@ -2,32 +2,17 @@
 
 import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { LoginPageClient } from "./LoginPageClient";
+import type { ReactNode } from "react";
 
-export default function LoginPage() {
-  const { data: session } = useSession();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/";
+type PageProps = {
+  searchParams: {
+    callbackUrl?: string;
+  };
+};
 
-  // すでにログイン済みならリダイレクト
-  if (session) {
-    router.replace(callbackUrl);
-    return null;
-  }
+export default function LoginPage({ searchParams }: PageProps) {
+  const callbackUrl = searchParams.callbackUrl ?? "/";
 
-  return (
-    <div className="max-w-md mx-auto py-10 space-y-4">
-      <h1 className="text-xl font-bold">ログイン</h1>
-      <p className="text-sm text-gray-600">
-        スキル投稿や予約にはログインが必要です。
-      </p>
-
-      <button
-        className="border px-4 py-2 rounded"
-        onClick={() => signIn("github", { callbackUrl })}
-      >
-        GitHubでログイン
-      </button>
-    </div>
-  );
+  return <LoginPageClient callbackUrl={callbackUrl} />;
 }
