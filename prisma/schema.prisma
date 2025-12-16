@@ -7,28 +7,115 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
+}
+
+enum SkillCategory {
+  ENGLISH
+  DOG_TRAINING
+  PC_SUPPORT
+  PHOTO
+  OTHER
 }
 
 model Skill {
-  id          Int      @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
+  ownerId     String
   title       String
   description String
   price       Int
-  category    String
+  category    SkillCategory
   area        String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  imageUrl    String? // 画像の URL を保存
+  owner       User          @relation(fields: [ownerId], references: [id])
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
-  reviews     Review[]
+  reviews      Review[]
+  reservations Reservation[]
 }
 
 model Review {
   id        Int      @id @default(autoincrement())
+  ownerId   String
   rating    Int
   comment   String?
+  owner     User     @relation(fields: [ownerId], references: [id])
   createdAt DateTime @default(now())
 
+  skillId Int
+  skill   Skill @relation(fields: [skillId], references: [id])
+}
+
+enum ReservationStatus {
+  PENDING // 依頼中
+  CONFIRMED // 承認済み
+  CANCELED // キャンセル
+}
+
+model Reservation {
+  id        String            @id @default(cuid())
+  ownerId   String
   skillId   Int
-  skill     Skill   @relation(fields: [skillId], references: [id])
+  date      DateTime
+  status    ReservationStatus @default(PENDING)
+  message   String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  conversation Conversation?
+  owner        User          @relation(fields: [ownerId], references: [id])
+  skill        Skill         @relation(fields: [skillId], references: [id])
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String? // ✅ 必須 → 任意にする
+  image        String?
+  bio          String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  skills       Skill[]
+  reviews      Review[]
+  reservations Reservation[]
+
+  messages                 Message[]      @relation("UserMessages") // 送信したメッセージ
+  // ★ 追加：依頼側として参加している会話
+  conversationsAsRequester Conversation[] @relation("ConversationRequester")
+  // ★ 追加：提供側として参加している会話
+  conversationsAsProvider  Conversation[] @relation("ConversationProvider")
+}
+
+model Conversation {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 予約と 1:1 で紐づく
+  reservationId String      @unique
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+
+  // 依頼側
+  requesterId String
+  requester   User   @relation("ConversationRequester", fields: [requesterId], references: [id])
+
+  // 提供側
+  providerId String
+  provider   User   @relation("ConversationProvider", fields: [providerId], references: [id])
+
+  messages Message[]
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String
+  senderId       String
+  body           String
+  createdAt      DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id])
+  sender       User         @relation("UserMessages", fields: [senderId], references: [id])
 }

@@ -1,3 +1,5 @@
+import "dotenv/config";
+import bcrypt from "bcryptjs";
 import { prisma } from "../lib/prisma";
 import { SkillCategory, ReservationStatus } from "@/app/generated/prisma/enums";
 
@@ -14,7 +16,9 @@ async function main() {
   await prisma.message.deleteMany();
   await prisma.conversation.deleteMany();
   await prisma.review.deleteMany();
+  await prisma.reservation.deleteMany();
   await prisma.skill.deleteMany();
+  await prisma.user.deleteMany();
 
   // ----------------------------
   // Users (10)
@@ -24,7 +28,7 @@ async function main() {
     Array.from({ length: 10 }, async (_, idx) => {
       const n = idx + 1;
       const id = `test${n}`;
-      // const passwordHash = await bcrypt.hash(`${id}-2025`, 10);
+      const passwordHash = await bcrypt.hash(`${id}-2025`, 10);
 
       return prisma.user.create({
         data: {
@@ -182,7 +186,6 @@ async function main() {
       },
     });
   }
-
   console.log(
     "Seed done ✅ (users10 skills20 reviews20 reservations20 conversations10 messages20)"
   );
