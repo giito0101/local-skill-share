@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
 type Props = {
@@ -13,7 +13,6 @@ type Props = {
 
 export function SkillSearchForm({ initialValues }: Props) {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const [q, setQ] = useState(initialValues?.q ?? "");
   const [category, setCategory] = useState(initialValues?.category ?? "");
@@ -47,6 +46,14 @@ export function SkillSearchForm({ initialValues }: Props) {
     router.push("/"); // クエリなし → 完全な「新着」状態
   };
 
+  const CATEGORY_LABEL: Record<string, string> = {
+    ENGLISH: "語学",
+    DOG_TRAINING: "犬のしつけ",
+    PC_SUPPORT: "PCサポート",
+    PHOTO: "写真",
+    OTHER: "その他",
+  };
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -70,10 +77,11 @@ export function SkillSearchForm({ initialValues }: Props) {
           onChange={(e) => setCategory(e.target.value)}
         >
           <option value="">すべて</option>
-          <option value="language">語学</option>
-          <option value="pet">ペット</option>
-          <option value="it">ITサポート</option>
-          {/* 必要に応じて増やす */}
+          <option value="ENGLISH">{CATEGORY_LABEL.ENGLISH}</option>
+          <option value="DOG_TRAINING">{CATEGORY_LABEL.DOG_TRAINING}</option>
+          <option value="PC_SUPPORT">{CATEGORY_LABEL.PC_SUPPORT}</option>
+          <option value="PHOTO">{CATEGORY_LABEL.PHOTO}</option>
+          <option value="OTHER">{CATEGORY_LABEL.OTHER}</option>
         </select>
       </div>
 
