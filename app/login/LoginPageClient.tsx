@@ -29,17 +29,19 @@ export function LoginPageClient({ callbackUrl }: Props) {
   }
 
   return (
-    <div className="max-w-md mx-auto py-10 space-y-4">
-      <h1 className="text-xl font-bold">ログイン</h1>
-      <p className="text-sm text-gray-600">
-        スキル投稿や予約にはログインが必要です。
-      </p>
-
+    <div className="max-w-sm mx-auto py-16 space-y-4">
       <button
-        className="border px-4 py-2 rounded"
-        onClick={() => signIn("github", { callbackUrl })}
+        className="w-full border rounded px-4 py-2"
+        onClick={() => signIn("github", { callbackUrl: "/" })}
       >
         GitHubでログイン
+      </button>
+
+      <button
+        className="w-full border rounded px-4 py-2"
+        onClick={() => signIn("demo", { callbackUrl: "/" })}
+      >
+        デモで入る（ゲスト）
       </button>
     </div>
   );

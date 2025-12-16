@@ -2,9 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { SkillSearchSchema } from "@/lib/validations";
 import { SkillSearchForm } from "@/app/components/skills/skill-search-form";
 import { SkillList } from "@/app/components/skills/skill-list";
-import Link from "next/link";
 import { getServerSession } from "next-auth";
-import { SignInButton, SignOutButton } from "./components/auth-button";
 import { authOptions } from "@/lib/auth";
 
 // 新着をどのくらいの頻度で更新したいか
@@ -92,25 +90,6 @@ export default async function HomePage({ searchParams }: PageProps) {
           </span>
         </div>
       )}
-      <div>
-        <Link
-          href="/reservations/my"
-          className="underline !text-blue-600 hover:!text-blue-800"
-        >
-          予約一覧
-        </Link>
-      </div>
-
-      <div>
-        <div>{session ? <SignOutButton /> : <SignInButton />}</div>
-        <div>
-          {session ? (
-            <p>Signed in as {session.user?.name ?? session.user?.email}</p>
-          ) : (
-            <p>Not signed in</p>
-          )}
-        </div>
-      </div>
     </div>
   );
 }
