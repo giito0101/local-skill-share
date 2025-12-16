@@ -1,28 +1,34 @@
 import { type NextAuthOptions } from "next-auth";
-import GitHubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { prisma } from "@/lib/prisma"; // あなたの PrismaClient の場所に合わせて
+import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 
 export const authOptions: NextAuthOptions = {
   providers: [
-    // ✅ 追加：Demoログイン
+    // ✅ 通常ログイン（フォーム用）
+
     CredentialsProvider({
-      id: "demo",
-      name: "Demo",
-      credentials: {},
-      async authorize() {
-        const demoEmail = "demo@local-skill-share.example";
-        const user = await prisma.user.upsert({
-          where: { email: demoEmail },
-          update: { name: "Demo User" },
-          create: {
-            email: demoEmail,
-            name: "Demo User",
-            passwordHash: "DEMO", // 後で optional にするなら不要にもできる
-            image: null,
-            bio: "This is a demo account for reviewers.",
-          },
-        });
+      id: "credentials",
+      name: "IDPassword",
+      credentials: {
+        loginId: { label: "ID", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        const loginId = credentials?.loginId?.trim();
+        const password = credentials?.password ?? "";
+
+        const user = await prisma.user.findFirst({ where: { id: loginId } });
+
+        if (!user?.passwordHash) {
+          console.log("[auth] no passwordHash");
+          return null;
+        }
+
+        const ok = await bcrypt.compare(password, user.passwordHash);
+
+        if (!ok) return null;
+
         return {
           id: user.id,
           name: user.name,
@@ -37,14 +43,11 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async jwt({ token, user }) {
-      // ✅ 初回ログイン時に user が来るので token に載せる
       if (user?.id) token.sub = user.id;
       return token;
     },
     async session({ session, token }) {
-      if (session.user && token?.sub) {
-        (session.user as any).id = token.sub; // ✅ ここで “本物のID”
-      }
+      if (session.user && token?.sub) (session.user as any).id = token.sub;
       return session;
     },
   },
