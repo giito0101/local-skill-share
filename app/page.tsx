@@ -2,6 +2,9 @@ import { prisma } from "@/lib/prisma";
 import { SkillSearchSchema } from "@/lib/validations";
 import { SkillSearchForm } from "@/app/components/skills/skill-search-form";
 import { SkillList } from "@/app/components/skills/skill-list";
+import { getServerSession } from "next-auth";
+// import { authOptions } from "@/lib/auth";
+import { PageNation } from "./components/search/page-nation";
 
 // 新着をどのくらいの頻度で更新したいか
 export const revalidate = 60; // 60秒ごとにISR
@@ -13,6 +16,9 @@ type PageProps = {
 const PAGE_SIZE = 12;
 
 export default async function HomePage({ searchParams }: PageProps) {
+  const session = await getServerSession(authOptions);
+  const myId = (session?.user as any)?.id as string | undefined;
+
   // 🟡 まず await して中身を取り出す
   const sp = await searchParams;
 
@@ -25,42 +31,53 @@ export default async function HomePage({ searchParams }: PageProps) {
   };
 
   const result = SkillSearchSchema.safeParse(raw);
+
   const parsed = result.success ? result.data : {};
 
   const page = parsed.page ?? 1;
 
   // Prisma の where 条件を組み立て
-  const where: any = {};
+  // const where: any = {};
 
-  if (parsed.q) {
-    where.OR = [
-      { title: { contains: parsed.q } },
-      { description: { contains: parsed.q } },
-    ];
+  const and: any[] = [];
+
+  const q = parsed.q?.trim();
+  if (q) {
+    and.push({
+      OR: [{ title: { contains: q } }, { description: { contains: q } }],
+    });
   }
 
-  if (parsed.category) {
-    where.category = parsed.category;
-  }
+  if (parsed.category) and.push({ category: parsed.category });
+  if (parsed.area) and.push({ area: parsed.area });
+  if (myId) and.push({ ownerId: { not: myId } });
 
-  if (parsed.area) {
-    where.area = parsed.area;
-  }
+  const where = and.length ? { AND: and } : undefined;
 
   const [skills, totalCount] = await Promise.all([
     prisma.skill.findMany({
-      where,
-      orderBy: { createdAt: "desc" }, // 新着順
+      where, // ✅ ここを where にする
+      orderBy: { createdAt: "desc" },
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
-      include: {
-        reviews: true, // 平均スコアを出すなら取っておく
-      },
+      include: { reviews: true },
     }),
-    prisma.skill.count({ where }),
+    prisma.skill.count({ where }), // ✅ 同じ where を使う
   ]);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+
+  const baseParams = new URLSearchParams();
+
+  if (parsed.q) baseParams.set("q", parsed.q);
+  if (parsed.category) baseParams.set("category", parsed.category);
+  if (parsed.area) baseParams.set("area", parsed.area);
+
+  const hrefForPage = (p: number) => {
+    const params = new URLSearchParams(baseParams);
+    params.set("page", String(p));
+    return `/?${params.toString()}`;
+  };
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 space-y-8">
@@ -77,15 +94,12 @@ export default async function HomePage({ searchParams }: PageProps) {
         <SkillList skills={skills} />
       </section>
 
-      {/* ページネーション（必要なら） */}
-      {totalPages > 1 && (
-        <div className="flex justify-center gap-2">
-          {/* ここはあとで shadcn/ui の Pagination に差し替えてOK */}
-          <span className="text-sm text-muted-foreground">
-            {page} / {totalPages} ページ
-          </span>
-        </div>
-      )}
+      <PageNation
+        page={page}
+        totalPages={totalPages}
+        hrefForPage={hrefForPage}
+        pageSize={PAGE_SIZE}
+      />
     </div>
   );
 }

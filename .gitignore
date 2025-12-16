@@ -46,3 +46,7 @@ next-env.d.ts
 /prisma/*.db-wal
 /prisma/*.db-shm
 /app/generated/prisma
+
+# bash DB dump
+/pg_dump/*.xlsx
+/pg_dump/export_csv/
