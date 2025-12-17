@@ -4,11 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma db push --accept-data-loss && prisma generate && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "postinstall": "prisma generate",
+    "db:push": "prisma db push",
+    "db:push:force": "prisma db push --accept-data-loss"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.1.0",
