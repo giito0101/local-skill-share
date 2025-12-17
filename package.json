@@ -9,9 +9,10 @@
     "lint": "eslint",
     "test": "vitest",
     "test:run": "vitest run",
-    "postinstall": "prisma generate",
-    "db:push": "prisma db push",
-    "db:push:force": "prisma db push --accept-data-loss"
+    "test:e2e": "playwright test",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate deploy",
+    "prisma:seed": "prisma db seed"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.1.0",
