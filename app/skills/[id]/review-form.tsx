@@ -1,4 +1,3 @@
-// app/skills/[id]/ReviewForm.tsx
 "use client";
 
 import { useActionState } from "react";
