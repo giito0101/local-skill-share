@@ -50,3 +50,6 @@ next-env.d.ts
 # bash DB dump
 /pg_dump/*.xlsx
 /pg_dump/export_csv/
+
+# Playwright
+/playwright-report/
