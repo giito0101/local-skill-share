@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { getFirstError } from "@/lib/validators/_utils";
 
 const initialState: UpdateSkillState = { ok: false, errors: {} as any };
 
@@ -47,7 +48,8 @@ export function EditSkillForm({
   const [state, formAction] = useActionState(updateSkillAction, initialState);
 
   // NewSkillForm と同じ形ならこう
-  const getError = (name: string) => (state as any).errors?.[name]?.[0];
+  // const getError = (name: string) => (state as any).errors?.[name]?.[0];
+  const getError = (name: string) => getFirstError(state.errors, name);
 
   return (
     <form action={formAction} className="space-y-6">
