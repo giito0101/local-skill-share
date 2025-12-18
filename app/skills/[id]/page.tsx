@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ReviewForm } from "./ReviewForm";
+import { ReviewForm } from "./review-form";
 import Image from "next/image";
 import { requireSession } from "@/lib/require-session";
 

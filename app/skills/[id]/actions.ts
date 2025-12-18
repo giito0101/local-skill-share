@@ -1,17 +1,9 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { requireSession } from "@/lib/require-session";
-
-const reviewSchema = z.object({
-  rating: z
-    .string()
-    .regex(/^[1-5]$/, "1〜5で入力してください")
-    .transform((v) => Number(v)),
-  comment: z.string().max(2000).optional().or(z.literal("")),
-});
+import { reviewSchema } from "@/lib/validators/review";
 
 export type ReviewFormState = {
   ok: boolean;
