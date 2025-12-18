@@ -8,6 +8,17 @@ export const skillCategories = [
   { value: "OTHER", label: "その他" },
 ] as const;
 
+type SkillCategoryValue = (typeof skillCategories)[number]["value"];
+
+/**
+ * z.enum に渡すための「非空タプル」を作る
+ * - values を string[] に潰さないのがポイント
+ */
+export const skillCategoryValues = skillCategories.map((c) => c.value) as [
+  SkillCategoryValue,
+  ...SkillCategoryValue[]
+];
+
 export const createSkillSchema = z.object({
   title: z.string().min(1, "タイトルは必須です").max(100),
   description: z.string().min(10, "説明は10文字以上にしてください").max(2000),
@@ -17,12 +28,16 @@ export const createSkillSchema = z.object({
     .transform((v) => Number(v))
     .refine((v) => v > 0, "0円より大きい値にしてください"),
   area: z.string().min(1, "エリアは必須です").max(100),
-  category: z.enum(
-    skillCategories.map((c) => c.value) as [string, ...string[]],
-    { error: "カテゴリを選択してください" }
-  ),
-  // 画像は「必須にしない」例
-  // 後で formData から処理するのでここでは扱わない or フラグにする
+
+  // ✅ v4 は message の方が安定
+  category: z.enum(skillCategoryValues, {
+    message: "カテゴリを選択してください",
+  }),
+});
+
+export const updateSkillSchema = createSkillSchema.extend({
+  id: z.coerce.number().int().positive("不正なIDです"),
 });
 
 export type CreateSkillInput = z.infer<typeof createSkillSchema>;
+export type UpdateSkillInput = z.infer<typeof updateSkillSchema>;
