@@ -52,7 +52,6 @@ next-env.d.ts
 /pg_dump/export_csv/
 
 # Playwright
-node_modules/
 /test-results/
 /playwright-report/
 /blob-report/

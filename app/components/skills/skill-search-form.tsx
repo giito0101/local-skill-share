@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { buildSearchUrl } from "./build-search-url";
 
 type Props = {
   initialValues?: {
@@ -27,16 +28,7 @@ export function SkillSearchForm({ initialValues }: Props) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const params = new URLSearchParams();
-
-    if (q.trim()) params.set("q", q.trim());
-    if (category) params.set("category", category);
-    if (area) params.set("area", area);
-
-    // 検索時は1ページ目に戻す
-    params.set("page", "1");
-
-    router.push(`/?${params.toString()}`);
+    router.push(buildSearchUrl({ q, category, area }));
   };
 
   const handleReset = () => {
@@ -60,8 +52,11 @@ export function SkillSearchForm({ initialValues }: Props) {
       className="flex flex-col gap-4 md:flex-row md:items-end"
     >
       <div className="flex-1 space-y-1">
-        <label className="block text-sm font-medium">キーワード</label>
+        <label htmlFor="skill-q" className="block text-sm font-medium">
+          キーワード
+        </label>
         <input
+          id="skill-q"
           className="w-full rounded-md border px-3 py-2 text-sm"
           placeholder="英会話、犬のしつけ など"
           value={q}
@@ -70,8 +65,11 @@ export function SkillSearchForm({ initialValues }: Props) {
       </div>
 
       <div className="space-y-1">
-        <label className="block text-sm font-medium">カテゴリ</label>
+        <label htmlFor="skill-category" className="block text-sm font-medium">
+          カテゴリ
+        </label>
         <select
+          id="skill-category"
           className="rounded-md border px-3 py-2 text-sm"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
@@ -86,8 +84,11 @@ export function SkillSearchForm({ initialValues }: Props) {
       </div>
 
       <div className="space-y-1">
-        <label className="block text-sm font-medium">エリア</label>
+        <label htmlFor="skill-area" className="block text-sm font-medium">
+          エリア
+        </label>
         <input
+          id="skill-area"
           className="rounded-md border px-3 py-2 text-sm"
           placeholder="例: 新宿、世田谷 など"
           value={area}
