@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { EditSkillForm } from "./EditSkillForm";
+import { EditSkillForm } from "./edit-skill-form";
 import { requireSession } from "@/lib/require-session";
 
 type Props = {
@@ -33,7 +33,10 @@ export default async function EditSkillPage({ params }: Props) {
       <EditSkillForm
         id={skill.id}
         defaultTitle={skill.title}
-        defaultDescription={skill.description ?? ""}
+        defaultDescription={skill.description}
+        defaultPrice={skill.price}
+        defaultArea={skill.area}
+        defaultCategory={skill.category}
       />
       <a href="/mypage" className="text-xs text-blue-600">
         マイページに戻る

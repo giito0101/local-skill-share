@@ -1,42 +1,63 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 import { requireSession } from "@/lib/require-session";
-import { redirect } from "next/navigation";
+import { updateSkillSchema } from "@/lib/validators/skill";
 
 export type UpdateSkillState = {
   ok: boolean;
-  error?: string;
+  errors: Record<string, string[]>;
 };
+
+const initialErrors: Record<string, string[]> = {};
 
 export async function updateSkillAction(
   prevState: UpdateSkillState,
   formData: FormData
 ): Promise<UpdateSkillState> {
-  const id = Number(formData.get("id"));
-  const title = (formData.get("title") as string | null)?.trim() ?? "";
-  const description =
-    (formData.get("description") as string | null)?.trim() ?? "";
+  // ① 認証（必要なら）
+  const session = await requireSession({ callbackUrl: "/" });
 
-  const session = await requireSession({ callbackUrl: `/skills/${id}/edit` });
+  // ② FormData -> raw
+  const raw = {
+    id: formData.get("id"),
+    title: formData.get("title"),
+    description: formData.get("description"),
+    price: formData.get("price"),
+    area: formData.get("area"),
+    category: formData.get("category"),
+  };
 
-  if (!title) {
-    return { ok: false, error: "タイトルは必須です。" };
+  // ③ validation
+  const parsed = updateSkillSchema.safeParse(raw);
+  if (!parsed.success) {
+    return {
+      ok: false,
+      errors: parsed.error.flatten().fieldErrors as Record<string, string[]>,
+    };
   }
 
+  const { id, title, description, price, area, category } = parsed.data;
+
+  // ④ 対象スキル取得（ownerチェックしたいならここ）
   const skill = await prisma.skill.findUnique({ where: { id } });
-  if (!skill || skill.ownerId !== session.user.id) {
-    return { ok: false, error: "このスキルは編集できません。" };
+  if (!skill) {
+    return { ok: false, errors: { _form: ["スキルが見つかりません"] } };
   }
 
+  // 例: 自分の投稿だけ編集可（ownerIdの型に合わせて調整）
+  if (skill.ownerId !== session.user.id) {
+    return { ok: false, errors: { _form: ["権限がありません"] } };
+  }
+
+  // ⑤ 更新
   await prisma.skill.update({
     where: { id },
-    data: {
-      title,
-      description,
-    },
+    data: { title, description, price, area, category },
   });
 
-  // 成功したらマイページに戻す
-  redirect("/mypage");
+  revalidatePath(`/skills/${id}`);
+
+  return { ok: true, errors: {} };
 }
