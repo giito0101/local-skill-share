@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { getFirstError } from "./_utils";
+import { getFirstError } from "@/lib/validators/_utils";
 
 const initialState: FormState = { ok: false, errors: {} };
 

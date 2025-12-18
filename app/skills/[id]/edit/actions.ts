@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { requireSession } from "@/lib/require-session";
 import { updateSkillSchema } from "@/lib/validators/skill";
+import type { FieldErrors } from "@/lib/validators/_utils";
 
 export type UpdateSkillState = {
   ok: boolean;
@@ -34,7 +35,7 @@ export async function updateSkillAction(
   if (!parsed.success) {
     return {
       ok: false,
-      errors: parsed.error.flatten().fieldErrors as Record<string, string[]>,
+      errors: parsed.error.flatten().fieldErrors,
     };
   }
 
