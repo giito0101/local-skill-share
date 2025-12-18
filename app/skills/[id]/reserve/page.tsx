@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { ReservationForm } from "./ReservationForm";
+import { ReservationForm } from "./reservation-form";
 import { requireSession } from "@/lib/require-session";
 type Props = {
   params: Promise<{ id: string }>;
