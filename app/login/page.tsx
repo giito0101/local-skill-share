@@ -1,3 +1,7 @@
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+
+import { authOptions } from "@/lib/auth";
 import { LoginPageClient } from "./LoginPageClient";
 
 type PageProps = {
@@ -7,6 +11,11 @@ type PageProps = {
 };
 
 export default async function LoginPage({ searchParams }: PageProps) {
+  const session = await getServerSession(authOptions);
+
+  // すでにログイン済みならホームへ
+  if (session) redirect("/");
+
   const sp = await searchParams;
   const callbackUrl = sp.callbackUrl ?? "/";
 

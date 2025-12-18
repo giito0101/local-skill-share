@@ -1,19 +1,23 @@
-export PGPASSWORD='npg_COGj9FQ0aZHN'
-export PGSSLMODE=require
+#!/usr/bin/env bash
+set -euo pipefail
+
+# .env.local を読む（存在する場合）
+if [ -f .env.local ]; then
+  export $(grep -v '^#' .env.local | xargs)
+fi
+
+if [ -z "${DATABASE_URL:-}" ]; then
+  echo "DATABASE_URL is not set"
+  exit 1
+fi
 
 mkdir -p export_csv
 
-tables=$(psql \
-  -h ep-soft-rice-adelylkl-pooler.c-2.us-east-1.aws.neon.tech \
-  -U neondb_owner \
-  -d neondb \
-  -Atc "select tablename from pg_tables where schemaname='public' order by tablename;")
+tables=$(psql "$DATABASE_URL" -Atc \
+"select tablename from pg_tables where schemaname='public' order by tablename;")
 
 for t in $tables; do
   echo "exporting $t..."
-  psql \
-    -h ep-soft-rice-adelylkl-pooler.c-2.us-east-1.aws.neon.tech \
-    -U neondb_owner \
-    -d neondb \
-    -c "\copy (select * from \"${t}\") to 'export_csv/${t}.csv' with csv header"
+  psql "$DATABASE_URL" -c \
+    "\copy (select * from \"${t}\") to 'export_csv/${t}.csv' with csv header"
 done

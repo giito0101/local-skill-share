@@ -52,4 +52,8 @@ next-env.d.ts
 /pg_dump/export_csv/
 
 # Playwright
+/test-results/
 /playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
