@@ -2,8 +2,6 @@
 
 import { useActionState } from "react";
 import { createSkillAction, type FormState } from "./actions";
-import { skillCategories } from "@/lib/validators/skill";
-
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -15,7 +13,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { getFirstError } from "@/lib/validators/_utils";
+import { getFirstError } from "@/lib/validators/skill/_utils";
+import { skillCategories } from "@/lib/validators/skill/skill";
 
 const initialState: FormState = { ok: false, errors: {} };
 

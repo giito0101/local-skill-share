@@ -3,7 +3,6 @@
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { updateSkillAction, type UpdateSkillState } from "./actions";
-import { skillCategories } from "@/lib/validators/skill"; // ←あなたの場所に合わせて
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -15,7 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getFirstError } from "@/lib/validators/_utils";
+import { getFirstError } from "@/lib/validators/skill/_utils";
+import { skillCategories } from "@/lib/validators/skill/skill";
 
 const initialState: UpdateSkillState = { ok: false, errors: {} as any };
 

@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { requireSession } from "@/lib/require-session";
-import { reviewSchema } from "@/lib/validators/review";
+import { reviewSchema } from "@/lib/validators/skill-review/review";
 
 export type ReviewFormState = {
   ok: boolean;
