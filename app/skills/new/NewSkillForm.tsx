@@ -15,14 +15,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { getFirstError } from "./_utils";
 
 const initialState: FormState = { ok: false, errors: {} };
 
 export default function NewSkillForm() {
   const [state, formAction] = useActionState(createSkillAction, initialState);
 
-  const getError = (name: string) => getFirstError(state.errors, name);
+  const getError = (name: string) => state.errors?.[name]?.[0];
   return (
     <div className="max-w-xl mx-auto py-10 space-y-6">
       <h1 className="text-2xl font-bold">スキルを登録する</h1>
