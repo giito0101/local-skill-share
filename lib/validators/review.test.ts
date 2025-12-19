@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { reviewSchema } from "../review";
+import { reviewSchema } from "./review";
 
 describe("reviewSchema", () => {
   it("valid: rating '5' -> number 5", () => {

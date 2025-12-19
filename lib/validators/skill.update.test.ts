@@ -1,10 +1,7 @@
 import { describe, it, expect } from "vitest";
-import {
-  createSkillSchema,
-  updateSkillSchema,
-} from "@/lib/validators/skill/skill";
 
-import { getFirstError, FieldErrors } from "@/lib/validators/skill/_utils";
+import { getFirstError, FieldErrors } from "@/lib/validators/_utils";
+import { createSkillSchema, updateSkillSchema } from "@/lib/validators/skill";
 
 describe("createSkillSchema", () => {
   it("valid input parses and transforms price to number", () => {
