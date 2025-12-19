@@ -1,16 +1,22 @@
 "use server";
 
-import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { put } from "@vercel/blob";
 import { requireSession } from "@/lib/require-session";
+import {
+  profileSchema,
+  skillIdSchema,
+  reservationSchema,
+  toProfileInput,
+  zodIssuesToMessages,
+} from "./validation";
 
-// ★ URL前提だった imageUrl を削除して、name / bio だけ Zod で見る
-const profileSchema = z.object({
-  name: z.string().min(1, "名前は必須です"),
-  bio: z.string().max(500, "自己紹介は500文字以内にしてください").optional(),
-});
+// // ★ URL前提だった imageUrl を削除して、name / bio だけ Zod で見る
+// const profileSchema = z.object({
+//   name: z.string().min(1, "名前は必須です"),
+//   bio: z.string().max(500, "自己紹介は500文字以内にしてください").optional(),
+// });
 
 export type ProfileFormState = {
   ok: boolean;
@@ -26,15 +32,12 @@ export async function updateProfileAction(
     const user = session.user;
 
     // name / bio は Zod でチェック
-    const parsed = profileSchema.safeParse({
-      name: formData.get("name"),
-      bio: formData.get("bio"),
-    });
+    const parsed = profileSchema.safeParse(toProfileInput(formData));
 
     if (!parsed.success) {
       return {
         ok: false,
-        errors: parsed.error.issues.map((i) => i.message),
+        errors: zodIssuesToMessages(parsed.error.issues),
       };
     }
 
@@ -85,9 +88,9 @@ export async function updateProfileAction(
   }
 }
 
-const skillIdSchema = z.object({
-  skillId: z.coerce.number(),
-});
+// const skillIdSchema = z.object({
+//   skillId: z.coerce.number(),
+// });
 
 export type DeleteSkillState = {
   ok: boolean;
@@ -144,10 +147,10 @@ export async function deleteSkillAction(
   }
 }
 
-const reservationSchema = z.object({
-  reservationId: z.string(),
-  intent: z.enum(["approve", "cancel"]),
-});
+// const reservationSchema = z.object({
+//   reservationId: z.string(),
+//   intent: z.enum(["approve", "cancel"]),
+// });
 
 export type ReservationActionState = {
   ok: boolean;

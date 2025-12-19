@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { ProfileForm } from "./components/ProfileForm";
+import { ProfileForm } from "./components/profile-form";
 import { SkillList } from "./components/SkillList";
 import { ReservationList } from "./components/ReservationList";
 import { requireSession } from "@/lib/require-session";
