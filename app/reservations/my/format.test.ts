@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { statusLabel, formatReservationDate } from "./reservations";
+import { statusLabel, formatReservationDate } from "./format.js";
 
 describe("statusLabel", () => {
   it("maps status to Japanese labels", () => {

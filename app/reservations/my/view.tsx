@@ -15,7 +15,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { Reservation, Skill } from "@/app/generated/prisma/client";
 import { useFormStatus } from "react-dom";
-import { formatReservationDate, statusLabel } from "@/lib/reservations";
+import {
+  formatReservationDate,
+  statusLabel,
+} from "@/app/reservations/my/format";
 
 type ReservationWithSkill = Reservation & {
   skill: Pick<Skill, "id" | "title">;
