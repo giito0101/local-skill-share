@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import { loginSchema } from "./validation";
+import { resolveLoginOutcome } from "./logic";
 
 export function LoginPageClient({ callbackUrl }: { callbackUrl: string }) {
   const [loginId, setLoginId] = useState("");
@@ -15,19 +17,24 @@ export function LoginPageClient({ callbackUrl }: { callbackUrl: string }) {
     e.preventDefault();
     setErr(null);
 
+    const parsed = loginSchema.safeParse({ loginId, password });
+    if (!parsed.success) {
+      setErr(parsed.error.issues[0]?.message ?? "入力が不正です");
+      return;
+    }
+
     const res = await signIn("credentials", {
-      loginId,
-      password,
+      ...parsed.data,
       callbackUrl,
       redirect: false,
     });
 
-    if (!res?.ok) {
-      setErr("IDかパスワードが違います");
+    const outcome = resolveLoginOutcome(res, callbackUrl);
+    if (outcome.kind === "error") {
+      setErr(outcome.message);
       return;
     }
-
-    window.location.href = res.url ?? callbackUrl;
+    window.location.href = outcome.url;
   }
 
   return (

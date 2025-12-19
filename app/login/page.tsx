@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth";
-import { LoginPageClient } from "./LoginPageClient";
+import { LoginPageClient } from "./login-page-client";
 
 type PageProps = {
   searchParams: Promise<{
