@@ -14,8 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getFirstError } from "@/lib/validators/skill/_utils";
-import { skillCategories } from "@/lib/validators/skill/skill";
+import { getFirstError } from "@/lib/validators/_utils";
+import { skillCategories } from "@/lib/validators/skill";
 
 const initialState: UpdateSkillState = { ok: false, errors: {} as any };
 

@@ -3,10 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { requireSession } from "@/lib/require-session";
-import {
-  parseReserve,
-  toReservationData,
-} from "@/lib/validators/skill-reserve/reserve";
+import { parseReserve, toReservationData } from "@/lib/validators/reserve";
 
 export async function reserveAction(formData: FormData) {
   const raw = {

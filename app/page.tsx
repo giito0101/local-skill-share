@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { SkillSearchSchema } from "@/lib/validations";
+import { SkillSearchSchema } from "@/lib/validators";
 import { SkillSearchForm } from "@/app/components/skills/skill-search-form";
 import { SkillList } from "@/app/components/skills/skill-list";
 import { getServerSession } from "next-auth";
