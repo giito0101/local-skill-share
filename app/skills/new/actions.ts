@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { put } from "@vercel/blob";
 import { authOptions } from "@/lib/auth";
-import { createSkillSchema } from "@/lib/validators/skill";
+import { createSkillSchema } from "@/lib/skills/validation";
 
 export type FormState = {
   ok: boolean;

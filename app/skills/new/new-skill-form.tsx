@@ -13,8 +13,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { getFirstError } from "@/lib/validators/_utils";
-import { skillCategories } from "@/lib/validators/skill";
+import { getFirstError } from "@/lib/skills/utils";
+import { skillCategories } from "@/lib/skills/validation";
 
 const initialState: FormState = { ok: false, errors: {} };
 

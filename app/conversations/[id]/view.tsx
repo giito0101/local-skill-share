@@ -5,8 +5,15 @@ import { sendMessageAction } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils"; // もしあるなら
+import { cn } from "@/lib/utils";
 import Link from "next/link";
+
+import {
+  isMine,
+  displaySenderLabel,
+  rowAlignClass,
+  bubbleClass,
+} from "./view-helpers";
 
 type MessageWithSender = {
   id: string;
@@ -28,7 +35,7 @@ export function ConversationView({
   conversationId: string;
   currentUserId: string;
   messages: MessageWithSender[];
-  backHref: string; // 追加：戻り先
+  backHref: string;
 }) {
   const formRef = useRef<HTMLFormElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
@@ -39,7 +46,6 @@ export function ConversationView({
 
   return (
     <div className="max-w-2xl mx-auto py-8 flex flex-col gap-4 h-[80vh]">
-      {/* ヘッダー行：戻るボタン + タイトル */}
       <div className="flex items-center gap-3">
         <Button variant="outline" size="sm" asChild>
           <Link href={backHref}>← 戻る</Link>
@@ -47,7 +53,6 @@ export function ConversationView({
         <h1 className="text-xl font-semibold">チャット</h1>
       </div>
 
-      {/* メッセージ一覧 */}
       <div className="flex-1 overflow-y-auto space-y-3 border rounded-lg p-3 bg-muted/40">
         {messages.length === 0 && (
           <p className="text-sm text-muted-foreground text-center mt-4">
@@ -56,25 +61,18 @@ export function ConversationView({
         )}
 
         {messages.map((m) => {
-          const isMine = m.senderId === currentUserId;
-          const name = m.sender.name ?? "（名無し）";
+          const mine = isMine(m.senderId, currentUserId);
+          const label = displaySenderLabel(m.sender.name, mine);
 
           return (
-            <div
-              key={m.id}
-              className={cn("flex", isMine ? "justify-end" : "justify-start")}
-            >
+            <div key={m.id} className={cn("flex", rowAlignClass(mine))}>
               <Card
                 className={cn(
                   "max-w-[70%] px-3 py-2 text-sm",
-                  isMine
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-background"
+                  bubbleClass(mine)
                 )}
               >
-                <div className="text-xs mb-1 opacity-80">
-                  {isMine ? "あなた" : name}
-                </div>
+                <div className="text-xs mb-1 opacity-80">{label}</div>
                 <div>{m.body}</div>
               </Card>
             </div>
@@ -84,7 +82,6 @@ export function ConversationView({
         <div ref={bottomRef} />
       </div>
 
-      {/* 送信フォーム */}
       <form
         ref={formRef}
         action={async (formData) => {
