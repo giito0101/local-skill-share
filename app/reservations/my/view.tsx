@@ -14,11 +14,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { Reservation, Skill } from "@/app/generated/prisma/client";
-import {
-  updateReservationStatusAction,
-  startConversationAction,
-} from "./actions";
 import { useFormStatus } from "react-dom";
+import { formatReservationDate, statusLabel } from "@/lib/reservations";
 
 type ReservationWithSkill = Reservation & {
   skill: Pick<Skill, "id" | "title">;
@@ -113,14 +110,7 @@ export function MyReservationsView(props: {
 
               {reservations.map((r) => (
                 <TableRow key={r.id}>
-                  <TableCell>
-                    {new Date(r.date).toLocaleString("ja-JP", {
-                      month: "2-digit",
-                      day: "2-digit",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </TableCell>
+                  <TableCell>{formatReservationDate(r.date)}</TableCell>
                   <TableCell>{r.skill.title}</TableCell>
                   <TableCell>
                     <Badge
@@ -169,17 +159,4 @@ export function MyReservationsView(props: {
       </Tabs>
     </div>
   );
-}
-
-function statusLabel(status: string) {
-  switch (status) {
-    case "PENDING":
-      return "承認待ち";
-    case "CONFIRMED":
-      return "確定";
-    case "CANCELED":
-      return "キャンセル";
-    default:
-      return status;
-  }
 }
