@@ -14,8 +14,8 @@ export default async function EditSkillPage({ params }: Props) {
     callbackUrl: `/skills/${id}}/edit`,
   });
 
-  const skillId = Number(id);
-  if (Number.isNaN(skillId)) notFound();
+  const skillId = id;
+  if (typeof skillId !== "string" || skillId.trim() === "") notFound();
 
   const skill = await prisma.skill.findUnique({
     where: { id: skillId },

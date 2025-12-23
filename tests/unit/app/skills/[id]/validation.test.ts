@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { reviewSchema } from "./validation";
+import { reviewSchema } from "../../../../../app/skills/[id]/validation";
 
 describe("reviewSchema", () => {
   it("valid: rating '5' -> number 5", () => {

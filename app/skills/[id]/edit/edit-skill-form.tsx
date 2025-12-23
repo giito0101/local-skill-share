@@ -29,7 +29,7 @@ function SubmitButton() {
 }
 
 type Props = {
-  id: number;
+  id: string;
   defaultTitle: string;
   defaultDescription: string;
   defaultPrice: number; // DBがIntなら number

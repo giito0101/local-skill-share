@@ -1,5 +1,5 @@
+import { validateSendMessage } from "@/app/conversations/[id]/validation";
 import { describe, it, expect } from "vitest";
-import { validateSendMessage } from "./validation";
 
 function fd(obj: Record<string, string>) {
   const f = new FormData();

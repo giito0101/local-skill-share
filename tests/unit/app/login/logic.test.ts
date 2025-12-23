@@ -1,5 +1,5 @@
+import { resolveLoginOutcome } from "@/app/login/logic";
 import { describe, it, expect } from "vitest";
-import { resolveLoginOutcome } from "./logic";
 
 describe("resolveLoginOutcome", () => {
   it("returns error when res is nullish", () => {

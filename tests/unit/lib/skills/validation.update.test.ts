@@ -77,12 +77,12 @@ describe("updateSkillSchema", () => {
       area: "東京",
       category: "ENGLISH",
     });
-    expect(parsed.id).toBe(1);
+    expect(parsed.id).toBe("1");
   });
 
   it("rejects invalid id", () => {
     const res = updateSkillSchema.safeParse({
-      id: "0",
+      id: "",
       title: "テスト",
       description: "0123456789",
       price: "1000",

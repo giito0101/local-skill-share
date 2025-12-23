@@ -5,7 +5,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ReviewForm } from "./review-form";
 import Image from "next/image";
-import { requireSession } from "@/lib/require-session";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -14,12 +13,12 @@ type Props = {
 export default async function SkillDetailPage({ params }: Props) {
   const { id } = await params;
 
-  if (Number.isNaN(Number(id))) {
+  if (typeof id !== "string" || id.trim() === "") {
     notFound();
   }
 
   const skill = await prisma.skill.findUnique({
-    where: { id: Number(id) },
+    where: { id: id },
     include: {
       owner: true,
       reviews: {

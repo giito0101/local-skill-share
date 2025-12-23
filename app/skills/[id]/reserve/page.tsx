@@ -12,7 +12,7 @@ export default async function ReservePage({ params }: Props) {
   await requireSession({ callbackUrl: `/skills/${id}/reserve` });
 
   const skill = await prisma.skill.findUnique({
-    where: { id: Number(id) },
+    where: { id: id },
   });
 
   if (!skill) redirect("/skills");

@@ -6,7 +6,7 @@ export const profileSchema = z.object({
 });
 
 export const skillIdSchema = z.object({
-  skillId: z.coerce.number(),
+  skillId: z.coerce.string().min(1, "不正なIDです"),
 });
 
 export const reservationSchema = z.object({

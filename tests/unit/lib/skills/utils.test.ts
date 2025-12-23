@@ -1,5 +1,5 @@
+import { getFirstError } from "@/lib/skills/utils";
 import { describe, it, expect } from "vitest";
-import { getFirstError } from "./utils";
 
 describe("getFirstError", () => {
   it("returns first error message for the field", () => {

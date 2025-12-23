@@ -5,7 +5,7 @@ import { deleteSkillAction, type DeleteSkillState } from "../actions";
 import { useFormStatus } from "react-dom";
 
 type Skill = {
-  id: number;
+  id: string;
   title: string;
   description: string | null;
 };
