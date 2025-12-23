@@ -1,5 +1,8 @@
+import {
+  isMine,
+  displaySenderLabel,
+} from "@/app/conversations/[id]/view-helpers";
 import { describe, it, expect } from "vitest";
-import { isMine, displaySenderLabel } from "./view-helpers";
 
 describe("view helpers", () => {
   it("isMine", () => {

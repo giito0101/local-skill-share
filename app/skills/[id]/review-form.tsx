@@ -14,7 +14,7 @@ import {
 import { createReviewAction, type ReviewFormState } from "./actions";
 
 type Props = {
-  skillId: number; // ← Int に合わせる
+  skillId: string;
 };
 
 const initialState: ReviewFormState = { ok: false };

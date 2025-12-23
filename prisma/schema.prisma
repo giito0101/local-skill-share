@@ -19,7 +19,7 @@ enum SkillCategory {
 }
 
 model Skill {
-  id          Int           @id @default(autoincrement())
+  id        String   @id @default(cuid())
   ownerId     String
   title       String
   description String
@@ -36,14 +36,14 @@ model Skill {
 }
 
 model Review {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(cuid())
   ownerId   String
   rating    Int
   comment   String?
   owner     User     @relation(fields: [ownerId], references: [id])
   createdAt DateTime @default(now())
 
-  skillId Int
+  skillId String
   skill   Skill @relation(fields: [skillId], references: [id])
 }
 
@@ -56,7 +56,7 @@ enum ReservationStatus {
 model Reservation {
   id        String            @id @default(cuid())
   ownerId   String
-  skillId   Int
+  skillId   String
   date      DateTime
   status    ReservationStatus @default(PENDING)
   message   String?

@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { parseReserve, toReservationData } from "./validation";
+import {
+  parseReserve,
+  toReservationData,
+} from "../../../../../../app/skills/[id]/reserve/validation";
 
 describe("parseReserve", () => {
   it("valid input", () => {

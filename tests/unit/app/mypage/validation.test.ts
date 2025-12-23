@@ -5,7 +5,7 @@ import {
   reservationSchema,
   toProfileInput,
   zodIssuesToMessages,
-} from "./validation";
+} from "../../../../app/mypage/validation";
 
 describe("profileSchema", () => {
   it("fails when name is empty", () => {

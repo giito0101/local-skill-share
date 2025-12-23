@@ -1,5 +1,5 @@
+import { loginSchema, getFirstLoginError } from "@/app/login/validation";
 import { describe, it, expect } from "vitest";
-import { loginSchema, getFirstLoginError } from "./validation";
 
 describe("loginSchema", () => {
   it("fails when loginId is empty", () => {

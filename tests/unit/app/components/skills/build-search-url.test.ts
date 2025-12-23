@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildSearchUrl } from "./build-search-url";
+import { buildSearchUrl } from "../../../../../app/components/skills/build-search-url";
 
 describe("build-search-form", () => {
   it("qが空白だけならqは付けない", () => {

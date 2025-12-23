@@ -7,7 +7,7 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./vitest.setup.ts"],
     include: ["**/*.test.ts", "**/*.test.tsx"], // spec をやめるのが簡単
-    exclude: ["tests/**", "playwright/**", "**/node_modules/**"],
+    exclude: ["playwright/**", "**/node_modules/**"],
   },
   plugins: [tsconfigPaths()],
 });

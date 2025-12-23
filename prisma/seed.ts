@@ -74,6 +74,7 @@ async function main() {
     const category = pick(categories, i);
     const area = pick(areas, i);
     return {
+      id: `s${String(i + 1).padStart(2, "0")}`, // ← 追加（s01, s02...）
       ownerId,
       title: `スキル${i + 1}（${category}）`,
       description: `スキル${i + 1}の説明です。エリア:${area}`,
@@ -102,6 +103,7 @@ async function main() {
 
       return prisma.review.create({
         data: {
+          id: `rev${String(i + 1).padStart(2, "0")}`,
           skillId: skill.id,
           ownerId: reviewerId,
           rating: (i % 5) + 1,

@@ -11,7 +11,7 @@ export type ReviewFormState = {
 };
 
 export async function createReviewAction(
-  skillId: number,
+  skillId: string,
   prevState: ReviewFormState,
   formData: FormData
 ): Promise<ReviewFormState> {
