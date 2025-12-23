@@ -36,7 +36,7 @@ export const createSkillSchema = z.object({
 });
 
 export const updateSkillSchema = createSkillSchema.extend({
-  id: z.coerce.number().int().positive("不正なIDです"),
+  id: z.coerce.string().min(1, "不正なIDです"),
 });
 
 export type CreateSkillInput = z.infer<typeof createSkillSchema>;

@@ -50,7 +50,7 @@ describe("toReservationData", () => {
       date: "2025-12-18T10:30",
       message: "",
     });
-    expect(d.skillId).toBe(12);
+    expect(d.skillId).toBe("12");
     expect(d.message).toBeNull();
     expect(d.date).toBeInstanceOf(Date);
   });

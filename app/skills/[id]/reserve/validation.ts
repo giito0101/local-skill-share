@@ -16,7 +16,7 @@ export function parseReserve(raw: unknown) {
 
 export function toReservationData(input: ReserveInput) {
   return {
-    skillId: Number(input.skillId),
+    skillId: input.skillId,
     date: new Date(input.date),
     message: input.message ? input.message : null, // "" → null
   };

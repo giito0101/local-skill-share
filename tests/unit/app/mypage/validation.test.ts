@@ -54,15 +54,16 @@ describe("toProfileInput", () => {
 });
 
 describe("skillIdSchema", () => {
-  it("coerces numeric string", () => {
-    const r = skillIdSchema.safeParse({ skillId: "123" });
-    expect(r.success).toBe(true);
-    if (r.success) expect(r.data.skillId).toBe(123);
+  it("fails when skillId is empty (min(1))", () => {
+    const r = skillIdSchema.safeParse({ skillId: "" });
+    expect(r.success).toBe(false);
+    if (!r.success)
+      expect(zodIssuesToMessages(r.error.issues)).toContain("不正なIDです");
   });
 
-  it("fails on non-number", () => {
+  it("passes on non-number", () => {
     const r = skillIdSchema.safeParse({ skillId: "abc" });
-    expect(r.success).toBe(false);
+    expect(r.success).toBe(true);
   });
 });
 
