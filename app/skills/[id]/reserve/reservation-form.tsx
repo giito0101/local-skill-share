@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { reserveAction } from "./actions";
-import { SubmitButton } from "./SubmitButton";
+import { SubmitButton } from "./submit-button";
 
 type Props = {
   skillId: string;
