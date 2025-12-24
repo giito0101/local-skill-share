@@ -28,7 +28,7 @@ export async function reserveAction(formData: FormData) {
   const { skillId, date, message } = toReservationData(result.data);
 
   const skill = await prisma.skill.findUnique({
-    where: { id: Number(skillId) },
+    where: { id: skillId },
   });
 
   if (!skill) {
@@ -37,7 +37,7 @@ export async function reserveAction(formData: FormData) {
 
   await prisma.reservation.create({
     data: {
-      skillId: Number(skillId),
+      skillId: skillId,
       ownerId: session.user.id,
       date: new Date(date),
       message: message || null,

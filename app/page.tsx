@@ -4,7 +4,7 @@ import { SkillSearchForm } from "@/app/components/skills/skill-search-form";
 import { SkillList } from "@/app/components/skills/skill-list";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { PageNation } from "./components/search/page-nation";
+import { PageNation } from "@/app/components/search/page-nation";
 
 // 新着をどのくらいの頻度で更新したいか
 export const revalidate = 60; // 60秒ごとにISR

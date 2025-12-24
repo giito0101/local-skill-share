@@ -1,5 +1,5 @@
+import { createSkillSchema, skillCategories } from "@/lib/skills/validation";
 import { describe, it, expect } from "vitest";
-import { createSkillSchema, skillCategories } from "./validation";
 
 describe("createSkillSchema", () => {
   it("valid input passes and transforms price to number", () => {
