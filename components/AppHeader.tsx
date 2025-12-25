@@ -20,7 +20,7 @@ export function AppHeader() {
 
           {status === "loading" ? null : session ? (
             <>
-              <span className="text-gray-500">
+              <span className="text-gray-500" data-testid={`currentUser`}>
                 {session.user?.name ?? "ログイン中"}
               </span>
               <Link href="/logout">ログアウト</Link>
