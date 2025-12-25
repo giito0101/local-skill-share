@@ -17,7 +17,13 @@ export function ReservationForm({ skillId }: Props) {
 
       <div className="space-y-1">
         <Label htmlFor="date">希望日時</Label>
-        <Input id="date" name="date" type="datetime-local" required />
+        <Input
+          id="date"
+          name="date"
+          type="datetime-local"
+          required
+          data-testid="reserveDate"
+        />
       </div>
 
       <div className="space-y-1">
@@ -27,6 +33,7 @@ export function ReservationForm({ skillId }: Props) {
           name="message"
           rows={4}
           placeholder="希望内容や相談したいことがあれば書いてください"
+          data-testid="reserveMessage"
         />
       </div>
 
