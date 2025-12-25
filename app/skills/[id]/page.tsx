@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ReviewForm } from "./review-form";
 import Image from "next/image";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -17,6 +19,10 @@ export default async function SkillDetailPage({ params }: Props) {
     notFound();
   }
 
+  // ✅ ログインしてるなら userId を取る（未ログインは null のまま）
+  const session = await getServerSession(authOptions);
+  const viewerId = session?.user?.id ?? null;
+
   const skill = await prisma.skill.findUnique({
     where: { id: id },
     include: {
@@ -27,6 +33,13 @@ export default async function SkillDetailPage({ params }: Props) {
       },
     },
   });
+
+  if (!skill) redirect("/");
+
+  // ✅ 自分のスキルなら notFound（一覧からも見えない扱い）
+  if (viewerId && skill.ownerId === viewerId) {
+    notFound();
+  }
 
   if (!skill) notFound();
 

@@ -57,7 +57,9 @@ export default async function ConversationPage({ params }: PageProps) {
   }
 
   const isRequester = userId === requesterId;
-  const backHref = isRequester ? "/mypage" : "/reservations/my";
+  const backHref = isRequester
+    ? "/mypage"
+    : `/reservations/${conversation.reservation.id}`;
 
   return (
     <ConversationView

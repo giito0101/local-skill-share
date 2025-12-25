@@ -75,5 +75,5 @@ export async function createSkillAction(
 
   // ⑤ 一覧を再検証 & 詳細ページへリダイレクト
   revalidatePath("/skills");
-  redirect(`/skills/${skill.id}`);
+  redirect(`/skills/${skill.id}/edit`);
 }
