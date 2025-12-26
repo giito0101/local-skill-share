@@ -76,6 +76,7 @@ export function ReservationList({ reservations }: Props) {
           return (
             <li
               key={r.id}
+              data-testid="reservation-item"
               className="rounded-lg border px-4 py-3 text-sm space-y-1"
             >
               <div className="flex justify-between">
