@@ -45,5 +45,5 @@ export async function reserveAction(formData: FormData) {
   });
 
   // 完了したら詳細ページに戻す
-  redirect(`/skills/${skillId}?reserved=1`);
+  redirect(`/skills/${skillId}`);
 }

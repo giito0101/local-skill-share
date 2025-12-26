@@ -7,7 +7,7 @@ export function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <Button type="submit" disabled={pending} data-testid="reserveSubmit">
+    <Button type="submit" disabled={pending}>
       {pending ? "送信中..." : "予約リクエストを送る"}
     </Button>
   );
