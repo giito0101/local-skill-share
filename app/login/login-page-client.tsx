@@ -93,6 +93,7 @@ export function LoginPageClient({ callbackUrl }: { callbackUrl: string }) {
               onChange={(e) => setLoginId(e.target.value)}
               placeholder="例: test1"
               autoComplete="username"
+              data-testid="loginId"
             />
           </div>
 
@@ -107,6 +108,7 @@ export function LoginPageClient({ callbackUrl }: { callbackUrl: string }) {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="例: test1-2025"
               autoComplete="current-password"
+              data-testid="password"
             />
           </div>
 
@@ -119,6 +121,7 @@ export function LoginPageClient({ callbackUrl }: { callbackUrl: string }) {
           <button
             className="w-full rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-black"
             type="submit"
+            data-testid="loginSubmit"
           >
             ログイン
           </button>
