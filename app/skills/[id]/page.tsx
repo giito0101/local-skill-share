@@ -88,10 +88,7 @@ export default async function SkillDetailPage({ params }: Props) {
 
             {/* 予約ボタン */}
             <div className="mt-4">
-              <Link
-                href={`/skills/${skill.id}/reserve`}
-                data-testid="reserveButton"
-              >
+              <Link href={`/skills/${skill.id}/reserve`}>
                 <Button>このスキルを予約する</Button>
               </Link>
             </div>

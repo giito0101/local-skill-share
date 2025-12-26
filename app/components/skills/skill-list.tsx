@@ -32,7 +32,6 @@ export function SkillList({ skills }: Props) {
             key={skill.id}
             href={`/skills/${skill.id}`}
             className="block rounded-lg border p-4 hover:shadow-sm transition"
-            data-testid={`skillCard-${skill.id}`}
           >
             <h3 className="font-semibold line-clamp-2">{skill.title}</h3>
             <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
