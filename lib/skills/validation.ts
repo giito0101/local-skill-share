@@ -19,6 +19,12 @@ export const skillCategoryValues = skillCategories.map((c) => c.value) as [
   ...SkillCategoryValue[]
 ];
 
+const imageUrlSchema = z
+  .string()
+  .trim()
+  .optional()
+  .transform((v) => (v && v.length > 0 ? v : null)); // "" を null に寄せる
+
 export const createSkillSchema = z.object({
   title: z.string().min(1, "タイトルは必須です").max(100),
   description: z.string().min(10, "説明は10文字以上にしてください").max(2000),
@@ -33,6 +39,9 @@ export const createSkillSchema = z.object({
   category: z.enum(skillCategoryValues, {
     message: "カテゴリを選択してください",
   }),
+
+  // ✅ 追加：空文字を null に寄せる
+  imageUrl: imageUrlSchema,
 });
 
 export const updateSkillSchema = createSkillSchema.extend({

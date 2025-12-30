@@ -22,6 +22,9 @@ export default async function EditSkillPage({ params }: Props) {
   });
 
   if (!skill) notFound();
+
+  const imageSrc = skill.imageUrl ?? "/images/sample.jpg";
+
   if (skill.ownerId !== session.user.id) {
     // 自分のスキル以外は編集させない
     redirect("/");
@@ -37,6 +40,7 @@ export default async function EditSkillPage({ params }: Props) {
         defaultPrice={skill.price}
         defaultArea={skill.area}
         defaultCategory={skill.category}
+        defaultImageUrl={imageSrc}
       />
       <a href="/mypage" className="text-xs text-blue-600">
         マイページに戻る
