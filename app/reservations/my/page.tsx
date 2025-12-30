@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { MyReservationsView } from "./view";
 import { ReservationStatus } from "@/app/generated/prisma/enums";
 import { requireSession } from "@/lib/require-session";
+import { ToastOnRedirect } from "./toast-on-redirect";
 
 type SearchParams = {
   tab?: string; // "future" | "past"
@@ -79,11 +80,14 @@ export default async function MyReservationsPage({
   const totalPages = Math.max(Math.ceil(totalCount / PAGE_SIZE), 1);
 
   return (
-    <MyReservationsView
-      tab={tab}
-      page={page}
-      totalPages={totalPages}
-      reservations={reservations}
-    />
+    <>
+      <ToastOnRedirect />
+      <MyReservationsView
+        tab={tab}
+        page={page}
+        totalPages={totalPages}
+        reservations={reservations}
+      />
+    </>
   );
 }
