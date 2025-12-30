@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { requireSession } from "@/lib/require-session";
 import { updateSkillSchema } from "@/lib/skills/validation";
+import { put, del } from "@vercel/blob";
 
 export type UpdateSkillState = {
   ok: boolean;
@@ -29,6 +30,10 @@ export async function updateSkillAction(
     category: formData.get("category"),
   };
 
+  // ✅ file を取得（input name="image" 想定）
+  const file = formData.get("image");
+  const imageFile = file instanceof File ? file : null;
+
   // ③ validation
   const parsed = updateSkillSchema.safeParse(raw);
   if (!parsed.success) {
@@ -51,10 +56,46 @@ export async function updateSkillAction(
     return { ok: false, errors: { _form: ["権限がありません"] } };
   }
 
+  // ✅ 保存する最終 imageUrl（デフォは現状維持）
+  let imageUrlToSave: string | null = skill.imageUrl ?? null;
+
+  // image が存在していれば blob の削除が必要（差し替える場合のみ）
+  if (imageFile && imageFile.size > 0) {
+    // 1) 新しい画像をアップロード
+    const blob = await put(
+      `skills/${crypto.randomUUID()}-${imageFile.name}`,
+      imageFile,
+      {
+        access: "public",
+        addRandomSuffix: true, // これを付けるならUUIDはなくてもOK
+      }
+    );
+
+    // 2) 旧画像が blob URL なら削除（任意）
+    //    ※ 外部URLも混ざる可能性があるなら、消す前に条件を入れると安全
+    if (skill.imageUrl) {
+      try {
+        await del(skill.imageUrl);
+      } catch {
+        // ここは「失敗しても更新自体は通す」方が体験が良いことが多い
+      }
+    }
+
+    // 3) DBに保存するURLを新しいものに
+    imageUrlToSave = blob.url;
+  }
+
   // ⑤ 更新
   await prisma.skill.update({
     where: { id },
-    data: { title, description, price, area, category },
+    data: {
+      title,
+      description,
+      price,
+      area,
+      category,
+      imageUrl: imageUrlToSave,
+    },
   });
 
   revalidatePath(`/skills/${id}`);

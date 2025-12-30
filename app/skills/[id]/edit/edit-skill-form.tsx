@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { getFirstError } from "@/lib/skills/utils";
 import { skillCategories } from "@/lib/skills/validation";
+import Image from "next/image";
 
 const initialState: UpdateSkillState = { ok: false, errors: {} as any };
 
@@ -35,6 +36,7 @@ type Props = {
   defaultPrice: number; // DBがIntなら number
   defaultArea: string;
   defaultCategory: (typeof skillCategories)[number]["value"];
+  defaultImageUrl: string | null;
 };
 
 export function EditSkillForm({
@@ -44,16 +46,30 @@ export function EditSkillForm({
   defaultPrice,
   defaultArea,
   defaultCategory,
+  defaultImageUrl,
 }: Props) {
   const [state, formAction] = useActionState(updateSkillAction, initialState);
 
-  // NewSkillForm と同じ形ならこう
-  // const getError = (name: string) => (state as any).errors?.[name]?.[0];
   const getError = (name: string) => getFirstError(state.errors, name);
 
   return (
     <form action={formAction} className="space-y-6">
       <input type="hidden" name="id" value={id} />
+
+      {defaultImageUrl && (
+        <div className="space-y-2">
+          <Label>現在の画像</Label>
+          <div className="relative w-full aspect-video overflow-hidden rounded-md bg-muted">
+            <Image
+              src={defaultImageUrl}
+              alt={defaultTitle}
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+        </div>
+      )}
 
       {/* タイトル */}
       <div className="space-y-1">
@@ -124,6 +140,12 @@ export function EditSkillForm({
         {getError("category") && (
           <p className="text-sm text-red-500">{getError("category")}</p>
         )}
+      </div>
+
+      {/* 画像アップロード（任意） */}
+      <div className="space-y-1">
+        <Label htmlFor="image">画像（任意）</Label>
+        <Input id="image" name="image" type="file" accept="image/*" />
       </div>
 
       {(state as any).error && (
