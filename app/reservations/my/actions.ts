@@ -36,6 +36,11 @@ export async function updateReservationStatusAction(formData: FormData) {
     throw new Error("操作権限がありません。");
   }
 
+  // ✅ 前提: PENDING のときだけ操作可能にする
+  if (reservation.status !== "PENDING") {
+    throw new Error("この予約はすでに処理済みです。");
+  }
+
   const now = new Date();
   // キャンセルのときだけ「過去はNG」にする例
   if (intent === "cancel" && reservation.date < now) {
@@ -50,7 +55,9 @@ export async function updateReservationStatusAction(formData: FormData) {
   });
 
   revalidatePath("/reservations/my");
-  redirect("/reservations/my?tab=future");
+
+  const toast = intent === "approve" ? "approved" : "canceled";
+  redirect(`/reservations/my?tab=future&toast=${toast}`);
 }
 
 // 既存の cancelReservationAction の下とかに追加
