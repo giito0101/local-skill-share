@@ -115,6 +115,7 @@ export function MyReservationsView(props: {
                 <TableRow key={r.id}>
                   <TableCell>{formatReservationDate(r.date)}</TableCell>
                   <TableCell>{r.skill.title}</TableCell>
+                  <TableCell>{r.message}</TableCell>
                   <TableCell>
                     <Badge
                       variant={
