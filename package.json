@@ -2,17 +2,29 @@
   "name": "local-skill-share",
   "version": "0.1.0",
   "private": true,
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "scripts": {
+    "//db": "=== DB ===",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:reset": "prisma migrate reset --force",
+    "db:seed": "prisma db seed",
+    "//local": "=== Local ===",
+    "local:setup": "npm run db:push && npm run db:seed",
     "dev": "next dev",
-    "build": "prisma generate && next build",
-    "start": "next start",
     "lint": "eslint",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:e2e": "playwright test",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate deploy",
-    "prisma:seed": "prisma db seed"
+    "//e2e": "=== E2E (CI) ===",
+    "e2e:setup": "npm run db:push && npm run db:seed",
+    "e2e": "playwright test",
+    "//product": "=== Product ===",
+    "build": "prisma generate && next build",
+    "start": "next start"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.1.0",
