@@ -50,6 +50,8 @@ export default async function SkillDetailPage({ params }: Props) {
       : skill.reviews.reduce((sum, r) => sum + r.rating, 0) /
         skill.reviews.length;
 
+  const imageSrc = skill.imageUrl ?? "/images/sample.jpg";
+
   return (
     <>
       <ReservedToast />
@@ -57,16 +59,15 @@ export default async function SkillDetailPage({ params }: Props) {
         {/* 上部：スキル情報 */}
         <section className="space-y-4">
           {/* 画像 */}
-          {skill.imageUrl && (
-            <div className="relative w-full aspect-video overflow-hidden rounded-md">
-              <Image
-                src={skill.imageUrl}
-                alt={skill.title}
-                fill
-                className="object-cover"
-              />
-            </div>
-          )}
+          <div className="relative w-full aspect-video overflow-hidden rounded-md bg-muted">
+            <Image
+              src={imageSrc}
+              alt={skill.title}
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
 
           <div className="space-y-2">
             <h1 className="text-2xl font-bold">{skill.title}</h1>
