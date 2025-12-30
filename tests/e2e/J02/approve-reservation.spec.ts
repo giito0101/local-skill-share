@@ -31,6 +31,19 @@ function toDisplayJa(iso: string) {
   return iso.replace("T", " ").replaceAll("-", "/");
 }
 
+function toDisplayJaMyPage(iso: string) {
+  const d = new Date(iso);
+
+  const y = d.getFullYear();
+  const m = d.getMonth() + 1; // 0-based
+  const day = d.getDate();
+  const hh = d.getHours();
+  const mm = d.getMinutes().toString().padStart(2, "0");
+  const ss = d.getSeconds().toString().padStart(2, "0");
+
+  return `${y}/${m}/${day} ${hh}:${mm}:${ss}`;
+}
+
 function reservationRow(
   page: Page,
   opts: { skillName: string; reserveAtText: string; statusText: string }
@@ -49,6 +62,7 @@ test.describe("J02: 予約が承認される", () => {
   }) => {
     const reserveAt = "2026-01-06T10:00";
     const reserveAtText = toDisplayJa(reserveAt);
+    const reserveAtTextMypage = toDisplayJaMyPage(reserveAt);
     const skillName = "スキル2（DOG_TRAINING）";
 
     let reservationUrl: string | null = null;
@@ -203,16 +217,16 @@ test.describe("J02: 予約が承認される", () => {
     await test.step("S10: requester 側で『承認済み』を確認", async () => {
       await page.goto(`${BASE_URL}/mypage`);
 
-      const item = page
+      const items = page
         .getByTestId("reservation-item")
         .filter({ hasText: skillName })
-        .filter({ hasText: reserveAtText })
+        .filter({ hasText: reserveAtTextMypage })
         .filter({ hasText: "提供者: test2" })
         .filter({ hasText: "状態: 承認済み" })
         .first();
 
-      await expect(item).toHaveCount(1);
-      await expect(item.first()).toBeVisible();
+      // 表示確認
+      await expect(items.first()).toBeVisible();
     });
   });
 });
