@@ -39,19 +39,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: pnpm
+          cache: npm
 
-      - run: pnpm install --frozen-lockfile
+      - run: npm ci
 
-      - run: pnpm prisma db push
-      - run: pnpm db:seed
+      # prisma（必要なら）
+      - run: npx prisma generate
+      - run: npx prisma db push
 
-      - run: pnpm playwright install --with-deps
-      - run: pnpm e2e
+      # seed（package.json の scripts に db:seed がある前提）
+      - run: npm run db:seed
+
+      # Playwright
+      - run: npx playwright install --with-deps
+
+      # e2e（package.json の scripts に e2e がある前提）
+      - run: npm run e2e
