@@ -226,7 +226,7 @@ test.describe("J02: 予約が承認される", () => {
         .first();
 
       // 表示確認
-      await expect(items.first()).toBeVisible();
+      await expect(items.first()).toContainText("承認済み", { timeout: 1000 });
     });
   });
 });
