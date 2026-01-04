@@ -1,10 +1,11 @@
 import { test, expect, Page } from "@playwright/test";
 
+const baseUrl = process.env.BASE_URL ?? "http://localhost:3000";
 async function login(
   page: Page,
   { id, password }: { id: string; password: string }
 ) {
-  await page.goto("http://localhost:3000/");
+  await page.goto(`${baseUrl}/`);
   await page.getByRole("link", { name: "ログイン" }).click();
 
   await page.getByLabel("ID").fill(id);
@@ -34,7 +35,7 @@ test.describe("J-01: login -> reserve", () => {
 
     // S02: スキル詳細へ（例：どれか1件開く）
     await test.step("S02: スキル詳細を開く", async () => {
-      await page.goto("http://localhost:3000/");
+      await page.goto(`${baseUrl}/`);
       await page
         .getByRole("link", { name: /スキル2（DOG_TRAINING）/ })
         .first()
@@ -72,7 +73,7 @@ test.describe("J-01: login -> reserve", () => {
       await login(page, { id: "test2", password: "test2-2025" });
 
       // ✅ 提供者の予約一覧へ
-      await page.goto("http://localhost:3000/reservations/my");
+      await page.goto(`${baseUrl}/reservations/my`);
       await expect(page.getByRole("link", { name: /予約一覧/ })).toBeVisible();
 
       // ✅ 一覧に「未確定」があり、かつ今回の予約っぽい情報が含まれること

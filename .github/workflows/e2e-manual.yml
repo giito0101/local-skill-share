@@ -31,6 +31,7 @@ jobs:
 
       NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET_E2E }}
       NEXTAUTH_URL: http://127.0.0.1:3000
+      BASE_URL: http://127.0.0.1:3000
 
     steps:
       - uses: actions/checkout@v4

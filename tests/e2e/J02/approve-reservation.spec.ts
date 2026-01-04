@@ -1,9 +1,9 @@
 import { test, expect, Page } from "@playwright/test";
 
-const BASE_URL = "http://localhost:3000";
+const baseUrl = process.env.BASE_URL ?? "http://localhost:3000";
 
 async function login(page: Page, loginId: string, password: string) {
-  await page.goto(`${BASE_URL}/`);
+  await page.goto(`${baseUrl}/`);
   await page.getByRole("link", { name: "ログイン" }).click();
 
   await page.getByLabel("ID").fill(loginId);
@@ -79,7 +79,7 @@ test.describe("J02: 予約が承認される", () => {
     // S02: スキル詳細へ移動
     // -----------------------------
     await test.step("S02: トップ → スキル詳細へ移動", async () => {
-      await page.goto(`${BASE_URL}/`);
+      await page.goto(`${baseUrl}/`);
       await page
         .getByRole("link", { name: new RegExp(skillName) })
         .first()
@@ -117,7 +117,7 @@ test.describe("J02: 予約が承認される", () => {
     // S05: provider 予約一覧で「未確定」の行を特定
     // -----------------------------
     await test.step("S05: provider 予約一覧で『未確定』の行を特定", async () => {
-      await page.goto(`${BASE_URL}/reservations/my`);
+      await page.goto(`${baseUrl}/reservations/my`);
 
       const row = reservationRow(page, {
         skillName,
@@ -183,7 +183,7 @@ test.describe("J02: 予約が承認される", () => {
       // await expect(page.getByText(/承認|確定|更新しました|完了/i)).toBeVisible();
 
       // 一覧へ戻って “確定” を確認（rowは作り直す）
-      await page.goto(`${BASE_URL}/reservations/my`);
+      await page.goto(`${baseUrl}/reservations/my`);
 
       const confirmedRow = reservationRow(page, {
         skillName,
@@ -215,7 +215,7 @@ test.describe("J02: 予約が承認される", () => {
     // S10: requester 側で「承認済み」を確認（マイページ等）
     // -----------------------------
     await test.step("S10: requester 側で『承認済み』を確認", async () => {
-      await page.goto(`${BASE_URL}/mypage`);
+      await page.goto(`${baseUrl}/mypage`);
 
       const items = page
         .getByTestId("reservation-item")
