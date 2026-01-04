@@ -21,10 +21,13 @@ export function statusLabel(status: ReservationStatus): string {
  * 例: "2025/12/19 09:00"
  */
 export function formatReservationDate(input: string | Date): string {
-  const date = typeof input === "string" ? new Date(input) : input;
-  if (Number.isNaN(date.getTime())) return "";
+  const d = typeof input === "string" ? new Date(input) : input;
 
-  const dtf = new Intl.DateTimeFormat("ja-JP", {
+  // ✅ invalid 判定（これが無いと落ちる or 変な値になる）
+  if (!(d instanceof Date) || Number.isNaN(d.getTime())) return "";
+
+  // ✅ Asia/Tokyo 固定で YYYY/MM/DD HH:mm
+  const parts = new Intl.DateTimeFormat("ja-JP", {
     timeZone: "Asia/Tokyo",
     year: "numeric",
     month: "2-digit",
@@ -32,17 +35,11 @@ export function formatReservationDate(input: string | Date): string {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
-  });
+  }).formatToParts(d);
 
-  const parts = dtf.formatToParts(date);
-  const get = (type: Intl.DateTimeFormatPartTypes) =>
-    parts.find((p) => p.type === type)?.value ?? "";
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
 
-  const y = get("year");
-  const m = get("month");
-  const d = get("day");
-  const hh = get("hour");
-  const mm = get("minute");
-
-  return `${y}/${m}/${d} ${hh}:${mm}`;
+  return `${get("year")}/${get("month")}/${get("day")} ${get("hour")}:${get(
+    "minute"
+  )}`;
 }

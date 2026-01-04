@@ -5,7 +5,7 @@ export function Reservation({ user }: any) {
       <ul className="space-y-2">
         {user.reservations.map((r: any) => (
           <li key={r.id} className="p-3 bg-gray-100 rounded">
-            <div>日付：{new Date(r.date).toLocaleString()}</div>
+            <div>日付：{new Date(r.date).toLocaleString("ja-JP")}</div>
             <div>ステータス：{r.status}</div>
           </li>
         ))}
