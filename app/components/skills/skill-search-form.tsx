@@ -1,30 +1,25 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { buildSearchUrl } from "./build-search-url";
 
 type Props = {
-  initialValues?: {
-    q?: string;
-    category?: string;
-    area?: string;
-  };
+  initialValues?: { q?: string; category?: string; area?: string };
 };
+
+type FormState = { q: string; category: string; area: string };
 
 export function SkillSearchForm({ initialValues }: Props) {
   const router = useRouter();
 
-  const [q, setQ] = useState(initialValues?.q ?? "");
-  const [category, setCategory] = useState(initialValues?.category ?? "");
-  const [area, setArea] = useState(initialValues?.area ?? "");
+  const [form, setForm] = useState<FormState>(() => ({
+    q: initialValues?.q ?? "",
+    category: initialValues?.category ?? "",
+    area: initialValues?.area ?? "",
+  }));
 
-  useEffect(() => {
-    // URL直打ちで変わったときなどの同期用（必須ではない）
-    setQ(initialValues?.q ?? "");
-    setCategory(initialValues?.category ?? "");
-    setArea(initialValues?.area ?? "");
-  }, [initialValues?.q, initialValues?.category, initialValues?.area]);
+  const { q, category, area } = form;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,9 +27,11 @@ export function SkillSearchForm({ initialValues }: Props) {
   };
 
   const handleReset = () => {
-    setQ("");
-    setCategory("");
-    setArea("");
+    setForm({
+      q: initialValues?.q ?? "",
+      category: initialValues?.category ?? "",
+      area: initialValues?.area ?? "",
+    });
     router.push("/"); // クエリなし → 完全な「新着」状態
   };
 
@@ -60,7 +57,7 @@ export function SkillSearchForm({ initialValues }: Props) {
           className="w-full rounded-md border px-3 py-2 text-sm"
           placeholder="英会話、犬のしつけ など"
           value={q}
-          onChange={(e) => setQ(e.target.value)}
+          onChange={(e) => setForm((p) => ({ ...p, q: e.target.value }))}
         />
       </div>
 
@@ -72,7 +69,7 @@ export function SkillSearchForm({ initialValues }: Props) {
           id="skill-category"
           className="rounded-md border px-3 py-2 text-sm"
           value={category}
-          onChange={(e) => setCategory(e.target.value)}
+          onChange={(e) => setForm((p) => ({ ...p, category: e.target.value }))}
         >
           <option value="">すべて</option>
           <option value="ENGLISH">{CATEGORY_LABEL.ENGLISH}</option>
@@ -92,7 +89,7 @@ export function SkillSearchForm({ initialValues }: Props) {
           className="rounded-md border px-3 py-2 text-sm"
           placeholder="例: 新宿、世田谷 など"
           value={area}
-          onChange={(e) => setArea(e.target.value)}
+          onChange={(e) => setForm((p) => ({ ...p, area: e.target.value }))}
         />
       </div>
 

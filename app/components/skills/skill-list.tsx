@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { type Skill, type Review } from "@/app/generated/prisma/client";
 
-type SkillWithRelations = Skill & {
+export type SkillWithRelations = Skill & {
   reviews: Review[];
 };
 

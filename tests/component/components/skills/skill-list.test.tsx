@@ -1,10 +1,17 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { SkillList } from "@/app/components/skills/skill-list";
+import type { SkillWithRelations } from "@/app/components/skills/skill-list";
+import type { ComponentProps, ReactNode } from "react";
+import { type Skill, type Review } from "@/app/generated/prisma/client";
 
+type MockNextLinkProps = Omit<ComponentProps<"a">, "href"> & {
+  href: string;
+  children?: ReactNode;
+};
 // next/link を素朴な <a> に落とす
 vi.mock("next/link", () => ({
-  default: ({ href, children, ...props }: any) => (
+  default: ({ href, children, ...props }: MockNextLinkProps) => (
     <a href={href} {...props}>
       {children}
     </a>
@@ -20,35 +27,36 @@ describe("SkillList", () => {
   });
 
   it("renders cards with correct href and price", () => {
-    render(
-      <SkillList
-        skills={[
-          {
-            id: "s1",
-            title: "スキル1（ENGLISH）",
-            description: "スキル1の説明です。エリア:新宿",
-            category: "ENGLISH",
-            area: "新宿",
-            price: 1000,
-            ownerId: "test1",
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            // reviews
-            reviews: [
-              {
-                id: "rev1",
-                skillId: "s1",
-                ownerId: "test2",
-                rating: 1,
-                comment: "",
-                createdAt: new Date(),
-                updatedAt: new Date(),
-              },
-            ],
-          } as any,
-        ]}
-      />
-    );
+    const makeReview = (overrides: Partial<Review> = {}): Review => ({
+      id: "rev1",
+      skillId: "s1",
+      ownerId: "test2",
+      rating: 1,
+      comment: "",
+      createdAt: new Date(),
+      ...overrides,
+    });
+
+    const makeSkill = (overrides: Partial<Skill> = {}): Skill => ({
+      id: "s1",
+      title: "スキル1（ENGLISH）",
+      description: "スキル1の説明です。エリア:新宿",
+      category: "ENGLISH" as Skill["category"], // ← category が enum の場合の安全な合わせ方
+      area: "新宿",
+      price: 1000,
+      ownerId: "test1",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      imageUrl: null,
+      ...overrides,
+    });
+
+    const skill: SkillWithRelations = {
+      ...makeSkill(),
+      reviews: [makeReview()],
+    };
+
+    render(<SkillList skills={[skill]} />);
 
     const link = screen.getByRole("link", {
       name: /スキル1の説明です。エリア:新宿/,
@@ -72,8 +80,9 @@ describe("SkillList", () => {
             ownerId: "u1",
             createdAt: new Date(),
             updatedAt: new Date(),
+            imageUrl: null,
             reviews: [],
-          } as any,
+          } as SkillWithRelations,
         ]}
       />
     );
