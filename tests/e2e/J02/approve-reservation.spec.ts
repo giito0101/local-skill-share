@@ -227,6 +227,11 @@ test.describe("J02: 予約が承認される", () => {
 
       // 表示確認
       await expect(items.first()).toContainText("承認済み", { timeout: 1000 });
+      await page.screenshot({
+        path: "test-results/debug-approve-reservation.png",
+        fullPage: true,
+      });
+      console.log("URL after login:", page.url());
     });
   });
 });

@@ -91,6 +91,11 @@ test.describe("J-01: login -> reserve", () => {
       // ✅ その行の中にあることを確認
       await expect(row.getByText("スキル2（DOG_TRAINING）")).toBeVisible();
       await expect(row.getByText("未確定")).toBeVisible({ timeout: 10000 });
+      await page.screenshot({
+        path: "test-results/debug-login-to-reserve.png",
+        fullPage: true,
+      });
+      console.log("URL after login:", page.url());
     });
   });
 });
