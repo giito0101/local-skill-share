@@ -7,6 +7,7 @@ import {
 } from "../my/actions";
 import { ActionButtons } from "@/app/reservations/components/ActionButtons";
 import { requireSession } from "@/lib/require-session";
+import Link from "next/link";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -64,7 +65,7 @@ export default async function ReservationDetailPage({ params }: PageProps) {
       <div className="flex gap-2">
         {/* 一覧に戻る */}
         <Button variant="outline" size="sm" asChild>
-          <a href="/reservations/my">一覧に戻る</a>
+          <Link href="/reservations/my/">一覧に戻る</Link>
         </Button>
 
         {/* チャットボタン */}

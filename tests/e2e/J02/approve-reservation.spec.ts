@@ -60,7 +60,7 @@ test.describe("J02: 予約が承認される", () => {
   test("requester(test1)が予約作成 → provider(test2)が承認 → requesterが承認済み確認", async ({
     page,
   }) => {
-    const reserveAt = "2026-01-06T10:00";
+    const reserveAt = "2028-01-06T10:00";
     const reserveAtText = toDisplayJa(reserveAt);
     const reserveAtTextMypage = toDisplayJaMyPage(reserveAt);
     const skillName = "スキル2（DOG_TRAINING）";

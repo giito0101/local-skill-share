@@ -43,13 +43,7 @@ export default async function ConversationStartPage({
     redirect("/mypage");
   }
 
-  // 2. 相手のユーザーIDを決める
-  const otherUserId = isSkillOwner
-    ? reservation.ownerId
-    : reservation.skill.ownerId;
-
-  // 3. 既存の会話があればそれを使う / なければ作る
-  //   ※ Conversation モデルは例。実際のスキーマ名に合わせてね。
+  // 既存の会話があればそれを使う / なければ作る
   let conversation = await prisma.conversation.findFirst({
     where: {
       reservationId: reservation.id, // 予約ごとに1つの会話、というイメージ

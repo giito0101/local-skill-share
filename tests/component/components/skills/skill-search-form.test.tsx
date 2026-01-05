@@ -59,6 +59,7 @@ describe("SkillSearchForm", () => {
     await user.click(screen.getByRole("button", { name: "クリア" }));
 
     // DOM変化（値が空になる）
+    screen.debug(screen.getByLabelText("キーワード"));
     expect(screen.getByLabelText("キーワード")).toHaveValue("");
     expect(screen.getByLabelText("カテゴリ")).toHaveValue("");
     expect(screen.getByLabelText("エリア")).toHaveValue("");

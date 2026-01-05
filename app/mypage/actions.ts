@@ -79,7 +79,7 @@ export async function updateProfileAction(
     revalidatePath("/mypage");
 
     return { ok: true };
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error(e);
     return {
       ok: false,

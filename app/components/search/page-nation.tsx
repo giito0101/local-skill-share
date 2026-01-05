@@ -31,7 +31,7 @@ export function PageNation({ page, totalPages, hrefForPage, pageSize }: Props) {
           const max = pageSize;
           const half = Math.floor(max / 2);
           let start = Math.max(1, page - half);
-          let end = Math.min(totalPages, start + max - 1);
+          const end = Math.min(totalPages, start + max - 1);
           start = Math.max(1, end - max + 1);
 
           const pages: number[] = [];

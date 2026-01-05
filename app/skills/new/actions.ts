@@ -67,7 +67,7 @@ export async function createSkillAction(
       description: data.description,
       price: data.price,
       area: data.area,
-      category: data.category as any, // enum 型なら as const 側と合わせてOK
+      category: data.category,
       imageUrl,
       ownerId: session.user.id,
     },
