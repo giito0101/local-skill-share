@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { ReservationForm } from "./reservation-form";
 import { requireSession } from "@/lib/require-session";

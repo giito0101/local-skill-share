@@ -11,8 +11,6 @@ export type UpdateSkillState = {
   errors: Record<string, string[]>;
 };
 
-const initialErrors: Record<string, string[]> = {};
-
 export async function updateSkillAction(
   prevState: UpdateSkillState,
   formData: FormData

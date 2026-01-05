@@ -6,6 +6,7 @@ import type { ProfileFormState } from "../actions";
 import { updateProfileAction } from "../actions";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import Image from "next/image";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -41,7 +42,7 @@ export function ProfileForm({
       <div className="flex items-center gap-3">
         <div className="h-16 w-16 rounded-full bg-gray-100 overflow-hidden">
           {defaultImageUrl ? (
-            <img
+            <Image
               src={defaultImageUrl}
               alt="アイコン"
               className="h-full w-full object-cover"
