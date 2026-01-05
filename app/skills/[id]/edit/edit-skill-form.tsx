@@ -18,7 +18,10 @@ import { getFirstError } from "@/lib/skills/utils";
 import { skillCategories } from "@/lib/skills/validation";
 import Image from "next/image";
 
-const initialState: UpdateSkillState = { ok: false, errors: {} as any };
+const initialState: UpdateSkillState = {
+  ok: false,
+  errors: {} as Record<string, string[]>,
+};
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -148,9 +151,7 @@ export function EditSkillForm({
         <Input id="image" name="image" type="file" accept="image/*" />
       </div>
 
-      {(state as any).error && (
-        <p className="text-sm text-red-500">{(state as any).error}</p>
-      )}
+      {state.error && <p className="text-sm text-red-500">{state.error}</p>}
       {state.ok && <p className="text-sm text-green-600">更新しました。</p>}
 
       <SubmitButton />

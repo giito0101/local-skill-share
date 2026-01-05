@@ -9,6 +9,7 @@ import { put, del } from "@vercel/blob";
 export type UpdateSkillState = {
   ok: boolean;
   errors: Record<string, string[]>;
+  error?: string; // ✅ 追加
 };
 
 export async function updateSkillAction(

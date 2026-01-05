@@ -25,7 +25,7 @@ function toDisplayJa(iso: string) {
 test.describe("J-01: login -> reserve", () => {
   test("login and make reservation", async ({ page }) => {
     // 予約時に使う入力（あとで提供者側で照合するため変数化）
-    const reserveAt = "2026-01-05T10:00";
+    const reserveAt = "2028-01-05T10:00";
     const message = "E2Eテストです";
 
     // S01: learner login

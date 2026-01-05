@@ -40,12 +40,14 @@ export function ProfileForm({
     <form action={formAction} className="space-y-4">
       {/* 現在のアイコン表示（ここはそのままでもOK） */}
       <div className="flex items-center gap-3">
-        <div className="h-16 w-16 rounded-full bg-gray-100 overflow-hidden">
+        <div className="h-16 w-16 rounded-full bg-gray-100 overflow-hidden relative">
           {defaultImageUrl ? (
             <Image
               src={defaultImageUrl}
               alt="アイコン"
-              className="h-full w-full object-cover"
+              fill
+              className="object-cover"
+              sizes="64px"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-xs text-gray-400">

@@ -3,8 +3,9 @@ import { SkillSearchSchema } from "@/app/validation";
 import { SkillSearchForm } from "@/app/components/skills/skill-search-form";
 import { SkillList } from "@/app/components/skills/skill-list";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { authOptions, type UserWithId } from "@/lib/auth";
 import { PageNation } from "@/app/components/search/page-nation";
+import { SkillCategory } from "./generated/prisma/enums";
 
 // 新着をどのくらいの頻度で更新したいか
 export const revalidate = 60; // 60秒ごとにISR
@@ -13,11 +14,20 @@ type PageProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
+type SkillFindManyArgs = NonNullable<
+  Parameters<typeof prisma.skill.findMany>[0]
+>;
+type SkillWhereInput = NonNullable<SkillFindManyArgs["where"]>;
+
 const PAGE_SIZE = 12;
 
 export default async function HomePage({ searchParams }: PageProps) {
   const session = await getServerSession(authOptions);
-  const myId = (session?.user as any)?.id as string | undefined;
+
+  const myId =
+    session?.user && "id" in session.user
+      ? (session.user as UserWithId).id
+      : undefined;
 
   // 🟡 まず await して中身を取り出す
   const sp = await searchParams;
@@ -37,9 +47,7 @@ export default async function HomePage({ searchParams }: PageProps) {
   const page = parsed.page ?? 1;
 
   // Prisma の where 条件を組み立て
-  // const where: any = {};
-
-  const and: any[] = [];
+  const and: SkillWhereInput[] = [];
 
   const q = parsed.q?.trim();
   if (q) {
@@ -48,11 +56,21 @@ export default async function HomePage({ searchParams }: PageProps) {
     });
   }
 
-  if (parsed.category) and.push({ category: parsed.category });
+  // ✅ string -> SkillCategory に変換してから入れる
+  const category =
+    typeof parsed.category === "string" &&
+    (Object.values(SkillCategory) as string[]).includes(parsed.category)
+      ? (parsed.category as SkillCategory)
+      : undefined;
+
+  if (parsed.category) and.push({ category });
   if (parsed.area) and.push({ area: parsed.area });
   if (myId) and.push({ ownerId: { not: myId } });
 
-  const where = and.length ? { AND: and } : undefined;
+  // where は「undefined か SkillWhereInput」
+  const where: SkillWhereInput | undefined = and.length
+    ? { AND: and }
+    : undefined;
 
   const [skills, totalCount] = await Promise.all([
     prisma.skill.findMany({

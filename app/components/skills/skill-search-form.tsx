@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { buildSearchUrl } from "./build-search-url";
 
 type Props = {
@@ -9,6 +9,8 @@ type Props = {
 };
 
 type FormState = { q: string; category: string; area: string };
+
+const EMPTY: FormState = { q: "", category: "", area: "" };
 
 export function SkillSearchForm({ initialValues }: Props) {
   const router = useRouter();
@@ -19,6 +21,14 @@ export function SkillSearchForm({ initialValues }: Props) {
     area: initialValues?.area ?? "",
   }));
 
+  useEffect(() => {
+    setForm({
+      q: initialValues?.q ?? "",
+      category: initialValues?.category ?? "",
+      area: initialValues?.area ?? "",
+    });
+  }, [initialValues?.q, initialValues?.category, initialValues?.area]);
+
   const { q, category, area } = form;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -27,12 +37,8 @@ export function SkillSearchForm({ initialValues }: Props) {
   };
 
   const handleReset = () => {
-    setForm({
-      q: initialValues?.q ?? "",
-      category: initialValues?.category ?? "",
-      area: initialValues?.area ?? "",
-    });
-    router.push("/"); // クエリなし → 完全な「新着」状態
+    setForm(EMPTY);
+    router.push("/");
   };
 
   const CATEGORY_LABEL: Record<string, string> = {
